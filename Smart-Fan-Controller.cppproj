@@ -164,15 +164,43 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="main.cpp">
+    <Compile Include="include\CommsController.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PWMController.cpp">
+    <Compile Include="include\ErrorHandler.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PWMController.h">
+    <Compile Include="include\PowerController.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="include\PWMController.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\SpeedController.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\CommsController.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ErrorHandler.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\main.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\PowerController.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\PWMController.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\SpeedController.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="include" />
+    <Folder Include="src" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

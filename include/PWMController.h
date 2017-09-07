@@ -6,16 +6,13 @@
  * Group 4
  */ 
 
+#include <stdint.h>
 
 #ifndef PWMCONTROLLER_H_
 #define PWMCONTROLLER_H_
 
-#include <avr/include/stdint.h>
-
 class PWMController {
 	uint8_t speed;
 };
-
-
 
 #endif /* PWMCONTROLLER_H_ */
