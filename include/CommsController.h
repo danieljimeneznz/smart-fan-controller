@@ -6,15 +6,22 @@
  * Group 4
  */ 
 
-
 #ifndef COMMSCONTROLLER_H_
 #define COMMSCONTROLLER_H_
+
+#define F_CPU 8000000UL // Clock Speed
+
+#include <avr/io.h>
+#include <stdint.h>
+#include <util/delay.h>
+
+#include "tinyjsonpp.h"
 
 class CommsController {
 public:
 	CommsController(uint8_t ubrr);
 	void transmit(uint8_t data);
-	uint8_t recieve();
+	void recieve();
 private:
 	tinyjsonpp* json;
 };

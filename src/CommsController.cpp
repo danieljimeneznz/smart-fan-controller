@@ -7,7 +7,6 @@
  */ 
 
 #include "..\include\CommsController.h"
-#include "tinyjsonpp.h"
 
 CommsController::CommsController(uint8_t ubrr) {
 	UBRR0H = (ubrr >> 8);
@@ -20,7 +19,7 @@ CommsController::CommsController(uint8_t ubrr) {
 	json = new tinyjsonpp(false, 255);
 }
 
-CommsController::transmit(uint8_t data) {
+void CommsController::transmit(uint8_t data) {
 	// Wait for empty transmit buffer.
 	while ((UCSR0A && (1 << UDRE0)) == 0);
 	UDR0 = data;
@@ -29,6 +28,6 @@ CommsController::transmit(uint8_t data) {
 }
 
 // Receive the data from the master
-uint8_t CommsController::recieve() {
+void CommsController::recieve() {
 	json->parse('x');
 }
