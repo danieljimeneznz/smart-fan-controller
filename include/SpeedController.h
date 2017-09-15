@@ -10,7 +10,18 @@
 #ifndef SPEEDCONTROLLER_H_
 #define SPEEDCONTROLLER_H_
 
+#include "../include/prototypes.h"
+
+#include "../include/PWMController.h"
+#include "../include/ErrorHandler.h"
+
 class SpeedController {
+public:
+	SpeedController();
+	void setControllerPointers(PWMController* pwmController, ErrorHandler* errorHandler);
+private:
+	PWMController* pwmController;
+	ErrorHandler* errorHandler;
 };
 
 #endif /* SPEEDCONTROLLER_H_ */

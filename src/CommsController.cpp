@@ -16,7 +16,7 @@ CommsController::CommsController(uint8_t ubrr) {
 	// Select 8-bit data frame, single stop bit and no parity using UCSR0C (Default values are what we want).
 
 	// Create a new tinyJSONpp Object.
-	json = new tinyjsonpp(false, 255);
+	//json = new tinyjsonpp(false, 255);
 }
 
 void CommsController::transmit(uint8_t data) {
@@ -29,5 +29,12 @@ void CommsController::transmit(uint8_t data) {
 
 // Receive the data from the master
 void CommsController::recieve() {
-	json->parse('x');
+	//json->parse('x');
+}
+
+void CommsController::setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler)
+{
+	this->speedController = speedController;
+	this->powerController = powerController;
+	this->errorHandler = errorHandler;
 }

@@ -8,4 +8,11 @@
 
 #include "..\include\SpeedController.h"
 
-//hi
+SpeedController::SpeedController() {
+
+}
+
+void SpeedController::setControllerPointers(PWMController* pwmController, ErrorHandler* errorHandler) {
+	this->pwmController = pwmController;
+	this->errorHandler = errorHandler;
+}

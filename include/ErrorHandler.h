@@ -10,7 +10,16 @@
 #ifndef ERRORHANDLER_H_
 #define ERRORHANDLER_H_
 
+#include "../include/prototypes.h"
+
+#include "../include/CommsController.h"
+
 class ErrorHandler {
+public:
+	ErrorHandler();
+	void setControllerPointers(CommsController* commsController);
+private:
+	CommsController* commsController;
 };
 
 #endif /* ERRORHANDLER_H_ */
