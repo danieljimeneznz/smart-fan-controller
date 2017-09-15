@@ -7,3 +7,7 @@
  */ 
 
 #include "..\include\PWMController.h"
+
+PWMController::PWMController() {
+
+}

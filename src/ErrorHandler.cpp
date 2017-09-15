@@ -6,4 +6,12 @@
  * Group 4
  */ 
 
- #include "..\include\ErrorHandler.h"
+#include "..\include\ErrorHandler.h"
+
+ErrorHandler::ErrorHandler() {
+
+}
+
+void ErrorHandler::setControllerPointers(CommsController* commsController) {
+	this->commsController = commsController;
+}

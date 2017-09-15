@@ -6,11 +6,31 @@
  * Group 4
  */ 
 
-
 #ifndef COMMSCONTROLLER_H_
 #define COMMSCONTROLLER_H_
 
+#include "../include/prototypes.h"
+
+#include <avr/io.h>
+#include <stdint.h>
+#include <util/delay.h>
+
+#include "../include/SpeedController.h"
+#include "../include/PowerController.h"
+#include "../include/ErrorHandler.h"
+//#include "tinyjsonpp.h"
+
 class CommsController {
+public:
+	CommsController(uint8_t ubrr);
+	void transmit(uint8_t data);
+	void recieve();
+	void setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler);
+private:
+	SpeedController* speedController;
+	PowerController* powerController;
+	ErrorHandler* errorHandler;
+	//tinyjsonpp* json;
 };
 
 #endif /* COMMSCONTROLLER_H_ */
