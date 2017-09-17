@@ -17,20 +17,23 @@
 #include "../include/SpeedController.h"
 #include "../include/ErrorHandler.h"
 
+CommsController commsController(56);
+PowerController powerController;
+PWMController pwmController;
+SpeedController speedController;
+ErrorHandler errorHandler;
+
+commsController.setControllerPointers(&speedController, &powerController, &errorHandler);
+powerController.setControllerPointers(&errorHandler);
+speedController.setControllerPointers(&pwmController, &errorHandler);
+errorHandler.setControllerPointers(&commsController);
+
+ISR() {
+}
+
 int main(void)
 {
-	// Create controllers in stack space.
-	CommsController commsController(56);
-	PowerController powerController;
-	PWMController pwmController;
-	SpeedController speedController;
-	ErrorHandler errorHandler;
-
-
-	commsController.setControllerPointers(&speedController, &powerController, &errorHandler);
-	powerController.setControllerPointers(&errorHandler);
-	speedController.setControllerPointers(&pwmController, &errorHandler);
-	errorHandler.setControllerPointers(&commsController);
+	sei();
 
 	//tinyjsonpp* json = new tinyjsonpp(false, 255);
 
