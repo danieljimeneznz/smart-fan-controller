@@ -6,7 +6,7 @@
  * Group 4
  */ 
 
-#include "..\include\ErrorHandler.h"
+#include "ErrorHandler.h"
 
 ErrorHandler::ErrorHandler() {
 

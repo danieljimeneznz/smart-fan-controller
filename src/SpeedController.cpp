@@ -6,7 +6,7 @@
  * Group 4
  */ 
 
-#include "..\include\SpeedController.h"
+#include "SpeedController.h"
 
 SpeedController::SpeedController() {
 

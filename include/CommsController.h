@@ -9,16 +9,16 @@
 #ifndef COMMSCONTROLLER_H_
 #define COMMSCONTROLLER_H_
 
-#include "../include/prototypes.h"
+#include "prototypes.h"
 
 #include <avr/io.h>
 #include <stdint.h>
 #include <util/delay.h>
 
-#include "../include/SpeedController.h"
-#include "../include/PowerController.h"
-#include "../include/ErrorHandler.h"
-//#include "tinyjsonpp.h"
+#include "SpeedController.h"
+#include "PowerController.h"
+#include "ErrorHandler.h"
+#include "tinyjsonpp.h"
 
 class CommsController {
 public:

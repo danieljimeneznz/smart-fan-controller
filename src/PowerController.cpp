@@ -6,7 +6,7 @@
  * Group 4
  */ 
 
-#include "..\include\PowerController.h"
+#include "PowerController.h"
 
 PowerController::PowerController() {
 	return;
@@ -14,4 +14,7 @@ PowerController::PowerController() {
 
 void PowerController::setControllerPointers(ErrorHandler* errorHandler) {
 	this->errorHandler = errorHandler;
+}
+
+void PowerController::readVoltage() {
 }

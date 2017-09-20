@@ -6,7 +6,7 @@
  * Group 4
  */ 
 
-#include "..\include\PWMController.h"
+#include "PWMController.h"
 
 PWMController::PWMController() {
 

@@ -10,14 +10,15 @@
 #ifndef POWERCONTROLLER_H_
 #define POWERCONTROLLER_H_
 
-#include "../include/prototypes.h"
+#include "prototypes.h"
 
-#include "../include/ErrorHandler.h"
+#include "ErrorHandler.h"
 
 class PowerController {
 public:
 	PowerController();
 	void setControllerPointers(ErrorHandler* errorHandler);
+	void readVoltage();
 private:
 	ErrorHandler* errorHandler;
 };

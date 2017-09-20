@@ -10,10 +10,10 @@
 #ifndef SPEEDCONTROLLER_H_
 #define SPEEDCONTROLLER_H_
 
-#include "../include/prototypes.h"
+#include "prototypes.h"
 
-#include "../include/PWMController.h"
-#include "../include/ErrorHandler.h"
+#include "PWMController.h"
+#include "ErrorHandler.h"
 
 class SpeedController {
 public:

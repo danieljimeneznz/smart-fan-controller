@@ -7,33 +7,52 @@
  */ 
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <string.h>
 
-#include "../include/prototypes.h"
+#include "prototypes.h"
 
-#include "../include/CommsController.h"
-#include "../include/PowerController.h"
-#include "../include/PWMController.h"
-#include "../include/SpeedController.h"
-#include "../include/ErrorHandler.h"
+#include "CommsController.h"
+#include "PowerController.h"
+#include "PWMController.h"
+#include "SpeedController.h"
+#include "ErrorHandler.h"
 
-CommsController commsController(56);
-PowerController powerController;
-PWMController pwmController;
-SpeedController speedController;
-ErrorHandler errorHandler;
+// Pointers used by ISR.
+CommsController* commsController;
+PowerController* powerController;
+PWMController* pwmController;
+SpeedController* speedController;
+ErrorHandler* errorHandler;
 
-commsController.setControllerPointers(&speedController, &powerController, &errorHandler);
-powerController.setControllerPointers(&errorHandler);
-speedController.setControllerPointers(&pwmController, &errorHandler);
-errorHandler.setControllerPointers(&commsController);
-
-ISR() {
+ISR(ADC_vect) {
+	powerController->readVoltage();
 }
 
 int main(void)
 {
-	sei();
+	// Instantiate objects in stack.
+	CommsController commsC(56);
+	PowerController powerC;
+	PWMController pwmC;
+	SpeedController speedC;
+	ErrorHandler errorH;
+
+	// Set relationship between objects
+	commsC.setControllerPointers(&speedC, &powerC, &errorH);
+	powerC.setControllerPointers(&errorH);
+	speedC.setControllerPointers(&pwmC, &errorH);
+	errorH.setControllerPointers(&commsC);
+	
+	// Set ISR pointers
+	commsController = &commsC;
+	powerController = &powerC;
+	pwmController = &pwmC;
+	speedController = &speedC;
+	errorHandler = &errorH;
+
+	// Enable Interrupts
+	sei(); // Set global interrupt enable.
 
 	//tinyjsonpp* json = new tinyjsonpp(false, 255);
 
@@ -59,4 +78,3 @@ int main(void)
     {
     }
 }
-

@@ -9,7 +9,7 @@
 #ifndef PWMCONTROLLER_H_
 #define PWMCONTROLLER_H_
 
-#include "../include/prototypes.h"
+#include "prototypes.h"
 
 class PWMController {
 public:

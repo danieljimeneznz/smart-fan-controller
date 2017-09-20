@@ -6,7 +6,7 @@
  * Group 4
  */ 
 
-#include "..\include\CommsController.h"
+#include "CommsController.h"
 
 CommsController::CommsController(uint8_t ubrr) {
 	UBRR0H = (ubrr >> 8);

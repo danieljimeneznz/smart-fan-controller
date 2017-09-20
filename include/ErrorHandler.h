@@ -10,9 +10,9 @@
 #ifndef ERRORHANDLER_H_
 #define ERRORHANDLER_H_
 
-#include "../include/prototypes.h"
+#include "prototypes.h"
 
-#include "../include/CommsController.h"
+#include "CommsController.h"
 
 class ErrorHandler {
 public:
