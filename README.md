@@ -4,7 +4,7 @@ This project was designed for use on the ATtiny841 Atmel Microcontroller.
 
 ## Dependencies
 This Project depends on the following Libraries:
-- [https://github.com/hydroflax/tinyjsonpp](TinyJSONpp)
+- [TinyJSONpp](https://github.com/hydroflax/tinyjsonpp)
 - [Atmel PID C Code](http://www.atmel.com/Images/Atmel-2558-Discrete-PID-Controller-on-tinyAVR-and-megaAVR_ApplicationNote_AVR221.pdf)
 
 TinyJSONpp was chosen as it is a memory friendly JSON parsing library. The Atmel PID Controller code was chosen for similar reasons (the main one being that this implementation of a PID controller uses Unsigned Integers rather than floats, which many other PID Controller Libraries use. This data type choice makes the library memory footprint much lower than the other libraries that use floating point variables).
