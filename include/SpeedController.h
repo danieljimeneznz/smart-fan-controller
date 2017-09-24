@@ -29,7 +29,7 @@ public:
 	void setFanSpeed(uint8_t speed);
 
 	// Measure the speed of the fan using the Hall sensor. Stores the speed in the currentSpeed.
-	measureSpeed();
+	void measureSpeed();
 
 	// Returns the requested speed.
 	uint8_t getRequestedSpeed();
