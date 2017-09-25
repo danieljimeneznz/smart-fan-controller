@@ -32,7 +32,7 @@ ISR(ADC_vect) {
 int main(void)
 {
 	// Instantiate objects in stack.
-	CommsController commsC(56);
+	CommsController commsC(MYBRR);
 	PowerController powerC;
 	PWMController pwmC;
 	SpeedController speedC;
