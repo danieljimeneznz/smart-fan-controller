@@ -26,7 +26,7 @@ SpeedController* speedController;
 ErrorHandler* errorHandler;
 
 ISR(ADC_vect) {
-	powerController->readVoltage();
+	//powerController->readVoltage(11);
 }
 
 int main(void)
