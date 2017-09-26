@@ -29,6 +29,19 @@ ISR(ADC_vect) {
 	//powerController->readVoltage(11);
 }
 
+ISR(USART0_RX_vect) {// There are two interrupts available,
+	//one is USART0_RXC_vect (waits for completion) and USART0_RXs_vect (waits for start of incoming)
+	//but atmel in only accepting USART0_RX_vect which i cant find in the data sheet
+	while (!(UCSR0A & (1<<RXC0)))//loop waits for completion of incoming
+	
+	//commsController->json->parse(UDR0);
+
+	if (UDR0 == 'd'){
+		commsController->jsonComplete = true;
+		PORTA |= (1 << PORTA7);
+	}
+}
+
 int main(void)
 {
 	// Instantiate objects in stack.

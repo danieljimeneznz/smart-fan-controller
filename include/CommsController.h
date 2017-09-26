@@ -12,7 +12,7 @@
 #include "prototypes.h"
 
 #define BAUD 9600 // Baud Rate
-#define MYBRR (((F_CPU/(BAUD*16UL))) - 1)
+#define MYBRR 52 //(((F_CPU/(BAUD*16UL))) - 1)
 
 #include <avr/io.h>
 #include <stdint.h>
