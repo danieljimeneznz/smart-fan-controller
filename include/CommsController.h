@@ -16,7 +16,6 @@
 
 #include <avr/io.h>
 #include <stdint.h>
-#include <util/delay.h>
 
 #include "SpeedController.h"
 #include "PowerController.h"

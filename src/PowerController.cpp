@@ -35,5 +35,5 @@ void PowerController::setControllerPointers(ErrorHandler* errorHandler) {
 }
 
 float PowerController::readVoltage(uint8_t channel) {
-	
+	return 0.0f;
 }

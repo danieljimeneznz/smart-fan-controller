@@ -28,7 +28,7 @@ void SpeedController::setFanSpeed(uint8_t speed) {
 
 	this->requestedSpeed = speed;
 	// Keep setting the duty cycle until we get a currentSpeed that is within the bounds of the requested speed.
-	uint16_t dutyCycle = pid_Controller(this->requestedSpeed, this->currentSpeed, &this->pid);
+	//uint16_t dutyCycle = pid_Controller(this->requestedSpeed, this->currentSpeed, &this->pid);
 	measureSpeed();
 
 	// Only need to reset integrator is the value overflows.

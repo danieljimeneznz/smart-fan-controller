@@ -8,6 +8,8 @@
 
 #include "CommsController.h"
 
+#include <util/delay.h>
+
 CommsController::CommsController(uint8_t ubrr) {
 	UCSR1B = (1<<RXEN1); // Enable USART  receiver
 	UBRR0H = (ubrr>>8);

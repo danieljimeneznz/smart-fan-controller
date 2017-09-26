@@ -42,6 +42,11 @@ ISR(USART0_RX_vect) {// There are two interrupts available,
 	}
 }
 
+ISR(TIMER0_OVF_vect){
+	PORTA |= (1<<PORTA1);
+	PORTA |= (1<<PORTA2);
+}
+
 int main(void)
 {
 	// Instantiate objects in stack.
@@ -89,5 +94,14 @@ int main(void)
 	//val = json->getValue("cur", "3/spd");
     while (1) 
     {
+		if((PINA)&(1<<PINA0)) {
+			TOCPMCOE &= ~(1<<TOCC1OE);	//disable TOCC1 at PA7
+			TOCPMCOE |= (1<<TOCC0OE);	//enable TOCC0 at PA3
+			PORTA &= ~(1<<PORTA7);		//disable PA7
+		} else {
+			TOCPMCOE &= ~(1<<TOCC0OE);	//disable TOCC0 at PA3
+			TOCPMCOE |= (1<<TOCC1OE);	//enable TOCC1 at PA7
+			PORTA &= ~(1<<PORTA3);		//disable PA3
+		}
     }
 }
