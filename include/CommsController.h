@@ -25,7 +25,7 @@
 class CommsController {
 public:
 	CommsController(uint8_t ubrr);
-	void transmit(uint8_t data);
+	void transmit(unsigned char data);
 	bool jsonComplete;
 	char recieve();
 	void setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler);

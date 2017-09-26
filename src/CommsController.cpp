@@ -11,13 +11,11 @@
 #include <util/delay.h>
 
 CommsController::CommsController(uint8_t ubrr) {
-	UCSR1B = (1<<RXEN1); // Enable USART  receiver
+	UCSR0B = (1<<RXEN0)|(1<<TXEN0); // Enable USART  receiver
 	UBRR0H = (ubrr>>8);
 	UBRR0L = ubrr;
-	// Enable Transmitter
-	UCSR0B = (1 << TXEN0); // 0b00001100
 	// Select 8-bit data frame, single stop bit and no parity using UCSR0C (Default values are what we want).
-
+	UCSR0C = (1 << USBS0); // two stop bits
 	// Set PA7 as Output.
 	DDRA |= (1<<DDA7);
 
@@ -25,9 +23,10 @@ CommsController::CommsController(uint8_t ubrr) {
 	//json = new tinyjsonpp(false, 255);
 }
 
-void CommsController::transmit(uint8_t data) {
+void CommsController::transmit(unsigned char data) {
+		//Enable Transmit
 	// Wait for empty transmit buffer.
-	while (!(UCSR0A && (1 << UDRE0)) == 0);
+	while (!(UCSR0A && (1 << UDRE0)));
 	UDR0 = data;
 	// After transmitting wait for a period of time before allowing next transmit.
 	_delay_us(1500);
