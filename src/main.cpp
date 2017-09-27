@@ -26,13 +26,34 @@ SpeedController* speedController;
 ErrorHandler* errorHandler;
 
 ISR(ADC_vect) {
-	powerController->readVoltage();
+	//powerController->readVoltage(11);
+}
+
+ISR(USART0_RX_vect) {// There are two interrupts available,
+	//one is USART0_RXC_vect (waits for completion) and USART0_RXs_vect (waits for start of incoming)
+	//but atmel in only accepting USART0_RX_vect which i cant find in the data sheet
+	while (!(UCSR0A & (1<<RXC0)))//loop waits for completion of incoming
+	
+	//commsController->json->parse(UDR0);
+
+	if (UDR0 == 'd'){
+		commsController->jsonComplete = true;
+		PORTA |= (1 << PORTA7);
+	}
+}
+
+ISR(TIMER0_OVF_vect){
+	PORTA |= (1<<PORTA1);
+	PORTA |= (1<<PORTA2);
+}
+
+ISR(PCINT0_vect) {
 }
 
 int main(void)
 {
 	// Instantiate objects in stack.
-	CommsController commsC(56);
+	CommsController commsC(MYBRR);
 	PowerController powerC;
 	PWMController pwmC;
 	SpeedController speedC;
@@ -76,5 +97,14 @@ int main(void)
 	//val = json->getValue("cur", "3/spd");
     while (1) 
     {
+		if((PINA)&(1<<PINA0)) {
+			TOCPMCOE &= ~(1<<TOCC7OE);	//disable TOCC1 at PB2
+			TOCPMCOE |= (1<<TOCC2OE);	//enable TOCC0 at PA3
+			PORTB &= ~(1<<PORTB2);		//disable PB2
+		} else {
+			TOCPMCOE &= ~(1<<TOCC2OE);	//disable TOCC0 at PA3
+			TOCPMCOE |= (1<<TOCC7OE);	//enable TOCC1 at PB2
+			PORTA &= ~(1<<PORTA3);		//disable PA3
+		}
     }
 }

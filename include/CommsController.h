@@ -11,9 +11,11 @@
 
 #include "prototypes.h"
 
+#define BAUD 9600 // Baud Rate
+#define MYBRR 52 //(((F_CPU/(BAUD*16UL))) - 1)
+
 #include <avr/io.h>
 #include <stdint.h>
-#include <util/delay.h>
 
 #include "SpeedController.h"
 #include "PowerController.h"
@@ -23,14 +25,15 @@
 class CommsController {
 public:
 	CommsController(uint8_t ubrr);
-	void transmit(uint8_t data);
-	void recieve();
+	void transmit(unsigned char data);
+	bool jsonComplete;
+	char recieve();
 	void setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler);
 private:
 	SpeedController* speedController;
 	PowerController* powerController;
 	ErrorHandler* errorHandler;
-	//tinyjsonpp* json;
+	tinyjsonpp* json;
 };
 
 #endif /* COMMSCONTROLLER_H_ */
