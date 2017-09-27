@@ -8,8 +8,6 @@
 
 #include "CommsController.h"
 
-#include <util/delay.h>
-
 CommsController::CommsController(uint8_t ubrr) {
 	UCSR0B = (1<<RXEN0)|(1<<TXEN0); // Enable USART  receiver
 	UBRR0H = (ubrr>>8);
@@ -28,8 +26,7 @@ void CommsController::transmit(unsigned char data) {
 	// Wait for empty transmit buffer.
 	while (!(UCSR0A && (1 << UDRE0)));
 	UDR0 = data;
-	// After transmitting wait for a period of time before allowing next transmit.
-	_delay_us(1500);
+	// After transmitting wait for buffer to be empty before allowing next transmit.
 }
 
 void CommsController::setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler)
