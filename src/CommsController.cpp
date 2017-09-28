@@ -19,9 +19,11 @@ CommsController::CommsController(uint8_t ubrr) {
 	//json = new tinyjsonpp(false, 255);
 }
 
-void CommsController::transmit(unsigned char data) {
+void CommsController::transmit(unint8_t data) {
 	while (!(UCSR0A && (1 << UDRE0))); // Wait for empty transmit buffer.
-	UDR0 = data;
+	UDR0 = data;//sending data to TX buffer
+	while (!(UCSR0A & (1<<TXC0))); // waits for buffer to be empty after tx
+	
 }
 
 void CommsController::setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler)
