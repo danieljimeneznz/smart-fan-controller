@@ -22,7 +22,7 @@ CommsController::CommsController(uint8_t ubrr) {
 void CommsController::transmit(unint8_t data) {
 	while (!(UCSR0A && (1 << UDRE0))); // Wait for empty transmit buffer.
 	UDR0 = data;//sending data to TX buffer
-	while (!(UCSR0A & (1<<TXC0))); // waits for buffer to be empty after tx
+	while (!(UCSR0A & (1<<TXC0))); // waits for Tx buffer to be empty
 	
 }
 
