@@ -9,20 +9,20 @@
 #include "CommsController.h"
 
 CommsController::CommsController(uint8_t ubrr) {
-	UCSR0B |= (1<<RXEN0)|(1<<TXEN0); // Enable Rx and Tx
+	UCSR0B |= (1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0); // Enable Rx, Tx and Rx complete interrupt
 	UBRR0H = (ubrr>>8);
 	UBRR0L = ubrr;
 	// Select 8-bit data frame, double stop bit and no parity using UCSR0C (Default values are what we want).
-	UCSR0C |= (1 << USBS0); // two stop bits
+	UCSR0C |= (1<<USBS0); // two stop bits
 
 	// Create a new tinyJSONpp Object.
 	//json = new tinyjsonpp(false, 255);
 }
 
 void CommsController::transmit(uint8_t data) {
-	while (!(UCSR0A && (1 << UDRE0))); // Wait for empty transmit buffer.
+	while (!(UCSR0A&&(1<<UDRE0))); // Wait for empty transmit buffer.
 	UDR0 = data;//sending data to TX buffer
-	while (!(UCSR0A & (1<<TXC0))); // waits for Tx buffer to be empty
+	while (!(UCSR0A&(1<<TXC0))); // waits for Tx buffer to be empty
 	
 }
 
