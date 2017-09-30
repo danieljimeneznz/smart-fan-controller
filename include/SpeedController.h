@@ -36,6 +36,9 @@ public:
 
 	// Returns the current speed.
 	uint8_t getCurrentSpeed();
+
+	// Variables used to count speed.
+	uint8_t speedCount;
 private:
 	PWMController* pwmController;
 	ErrorHandler* errorHandler;
