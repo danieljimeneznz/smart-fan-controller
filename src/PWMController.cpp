@@ -34,4 +34,13 @@ PWMController::PWMController() {
 	TOCPMSA0 &= ~((1<<TOCC2S1)|(1<<TOCC2S0));// route OC0B to PA3
 
 	TIMSK0 |= (1<<TOIE0);	//Enable timer overflow interrupt
+
+	// Set Hall Sensor to external pin change interrupt.
+	PCMSK0 |= (1<<PCINT0);
+
+	// Set Interrupt Sense control to trigger on any logic change.
+	MCUCR |= (1<<ISC00);
+
+	// Enable Pin Change Interrupt
+	GIMSK |= (1<<PCIE0);
 }
