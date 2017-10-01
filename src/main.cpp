@@ -47,7 +47,8 @@ ISR(TIMER0_OVF_vect){
 	PORTA |= (1<<PORTA2);
 }
 
-ISR(TIMER1_OVF_vect){
+ISR(TIMER1_COMPA_vect){
+	++speedController->timerCount;
 	speedController->measureSpeed();
 }
 
@@ -114,6 +115,6 @@ int main(void)
 	//val = json->getValue("cur", "3/spd");
     while (1) 
     {
-		
-    }
+		commsController->transmit(speedController->currentSpeed);
+	}
 }

@@ -44,6 +44,10 @@ void SpeedController::setFanSpeed(uint8_t speed) {
 }
 
 void SpeedController::measureSpeed() {
+	// Check if we have counted to 3 seconds.
+	if(this->timerCount < 6) {
+		return;
+	}
 	// Measure the speed from the hall sensor and change the current speed on the controller.
 
 	// Logic:
@@ -54,7 +58,11 @@ void SpeedController::measureSpeed() {
 
 	// Convert frequency to RPM/10 to get speed.
 	// f(rpm) = f(Hz) * 60;
-	this->currentSpeed = speedCount * 30;
+	this->currentSpeed = speedCount/2;
+
+	// Reset the speedCounter.
+	this->speedCount = 0;
+	this->timerCount = 0;
 }
 
 uint8_t SpeedController::getRequestedSpeed() {
