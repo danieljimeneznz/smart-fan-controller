@@ -38,7 +38,6 @@ ISR(USART0_RX_vect) {// There are two interrupts available,
 	uint8_t data = UDR0;
 	if (data == 'd'){
 		commsController->jsonComplete = true;
-		commsController->transmit('b');
 	}
 }
 
@@ -55,7 +54,7 @@ ISR(TIMER1_COMPA_vect){
 // ISR for hall sensor.
 ISR(PCINT0_vect) {
 	if((PINA)&(1<<PINA0)) {
-		TOCPMCOE &= ~(1<<TOCC7OE);	//disable TOCC1 at PB2
+		TOCPMCOE &= ~ (1<<TOCC7OE);	//disable TOCC1 at PB2
 		TOCPMCOE |= (1<<TOCC2OE);	//enable TOCC0 at PA3
 		PORTB &= ~(1<<PORTB2);		//disable PB2
 		} else {
@@ -118,5 +117,6 @@ int main(void)
     while (1)                  
     {
 		//commsController->transmit(speedController->currentSpeed);
+		//commsController->transmit('b');
 	}
 }
