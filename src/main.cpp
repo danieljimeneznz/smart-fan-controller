@@ -34,10 +34,13 @@ ISR(USART0_RX_vect) {// There are two interrupts available,
 	//but atmel in only accepting USART0_RX_vect which i cant find in the data sheet
 	//while (!(UCSR0A & (1<<RXC0)))//loop waits for completion of incoming
 	
-	//commsController->json->parse(UDR0);
 	uint8_t data = UDR0;
 	if (data == 'd'){
 		commsController->jsonComplete = true;
+	}
+
+	if (data > 30) {
+		commsController->json->addCharToJSONString(data);
 	}
 }
 
@@ -92,7 +95,7 @@ int main(void)
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
 
-	speedController->setFanSpeed(40);
+	speedController->setFanSpeed(255);
 
 	//tinyjsonpp* json = new tinyjsonpp(false, 255);
 
@@ -118,5 +121,6 @@ int main(void)
     {
 		//commsController->transmit(speedController->currentSpeed);
 		//commsController->transmit('b');
+		commsController->run();
 	}
 }

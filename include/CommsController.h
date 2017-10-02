@@ -30,11 +30,12 @@ public:
 	char recieve();
 	void run();
 	void setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler);
+
+	tinyjsonpp* json;
 private:
 	SpeedController* speedController;
 	PowerController* powerController;
 	ErrorHandler* errorHandler;
-	tinyjsonpp* json;
 };
 
 #endif /* COMMSCONTROLLER_H_ */
