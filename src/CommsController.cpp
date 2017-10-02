@@ -5,7 +5,7 @@
  * ELECTENG 311 Smart Fan Project
  * Group 4
  */ 
-
+#define SOFT_VER "0.1.0"
 #include "CommsController.h"
 
 CommsController::CommsController(uint8_t ubrr) {
@@ -16,7 +16,7 @@ CommsController::CommsController(uint8_t ubrr) {
 	UCSR0C |= (1<<USBS0); // two stop bits
 
 	// Create a new tinyJSONpp Object.
-	//json = new tinyjsonpp(false, 255);
+	json = new tinyjsonpp(false, 255);
 }
 
 void CommsController::transmit(uint8_t data) {
@@ -24,6 +24,26 @@ void CommsController::transmit(uint8_t data) {
 	UDR0 = data;//sending data to TX buffer
 	while (!(UCSR0A&(1<<TXC0))); // waits for Tx buffer to be empty
 	
+}
+
+void CommsController::run(){
+
+	if (this->jsonComplete == true){//checking if Rx is complete
+		Value val;
+		val = json->getValue("3");//checking that Rx is meant to be for our fan
+		if (val.size > 2) {//checking if only an update is requested
+			val = json->getValue("req", "3/spd");
+			if (val.size > 0) {
+				speedController->setFanSpeed(json->convertValueToInt(val));
+			}
+			val = json->getValue("clr", "3");
+			if (val.size > 0){
+				//clear errors
+			}
+		//give back an update
+		json->insert("spd", "SOFT_VER", "3");
+		}
+	}
 }
 
 void CommsController::setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler)

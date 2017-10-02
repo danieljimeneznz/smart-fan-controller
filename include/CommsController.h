@@ -28,6 +28,7 @@ public:
 	void transmit(uint8_t data);
 	bool jsonComplete;
 	char recieve();
+	void run();
 	void setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler);
 private:
 	SpeedController* speedController;
