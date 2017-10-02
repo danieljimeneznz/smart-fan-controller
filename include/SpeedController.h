@@ -38,14 +38,16 @@ public:
 	uint8_t getCurrentSpeed();
 
 	// Variables used to count speed.
-	uint8_t speedCount;
-private:
-	PWMController* pwmController;
-	ErrorHandler* errorHandler;
+	uint16_t speedCount;
+	uint8_t timerCount;
 
 	// Speed variables.
 	uint8_t currentSpeed;
 	uint8_t requestedSpeed;
+
+private:
+	PWMController* pwmController;
+	ErrorHandler* errorHandler;
 
 	// PID controller.
 	PID_DATA pid;

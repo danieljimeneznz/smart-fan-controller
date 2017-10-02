@@ -27,8 +27,8 @@ PWMController::PWMController() {
 
 	TCNT0 = 0;	//reset counter register
 
-	OCR0A = 255; //the Duty cycle n/255
-	OCR0B = 255; //the Duty cycle n/255
+	OCR0A = 0; //the Duty cycle n/255
+	OCR0B = 0; //the Duty cycle n/255
 
 	TOCPMSA0 &= ~((1<<TOCC7S1)|(1<<TOCC7S0));// route OC0A to PB2
 	TOCPMSA0 &= ~((1<<TOCC2S1)|(1<<TOCC2S0));// route OC0B to PA3
@@ -43,4 +43,11 @@ PWMController::PWMController() {
 
 	// Enable Pin Change Interrupt
 	GIMSK |= (1<<PCIE0);
+}
+
+void PWMController::SetDutyCycle(uint8_t Duty){
+	OCR0A = Duty;
+	OCR0B = Duty;
+
+	this->Duty = Duty;
 }

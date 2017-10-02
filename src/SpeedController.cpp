@@ -36,14 +36,19 @@ void SpeedController::setFanSpeed(uint8_t speed) {
 	// Will need to invoke error handler for these cases.
 
 	this->requestedSpeed = speed;
+	this->pwmController->SetDutyCycle(speed);
 	// Keep setting the duty cycle until we get a currentSpeed that is within the bounds of the requested speed.
 	//uint16_t dutyCycle = pid_Controller(this->requestedSpeed, this->currentSpeed, &this->pid);
 
 	// Only need to reset integrator is the value overflows.
-	pid_Reset_Integrator(&this->pid);
+	//pid_Reset_Integrator(&this->pid);
 }
 
 void SpeedController::measureSpeed() {
+	// Check if we have counted to 3 seconds.
+	if(this->timerCount < 6) {
+		return;
+	}
 	// Measure the speed from the hall sensor and change the current speed on the controller.
 
 	// Logic:
@@ -54,7 +59,11 @@ void SpeedController::measureSpeed() {
 
 	// Convert frequency to RPM/10 to get speed.
 	// f(rpm) = f(Hz) * 60;
-	this->currentSpeed = speedCount * 30;
+	this->currentSpeed = speedCount/2;
+
+	// Reset the speedCounter.
+	this->speedCount = 0;
+	this->timerCount = 0;
 }
 
 uint8_t SpeedController::getRequestedSpeed() {

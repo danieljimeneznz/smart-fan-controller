@@ -14,6 +14,10 @@
 class PWMController {
 public:
 	PWMController();
+
+	void SetDutyCycle(uint8_t Duty);
+
+	uint8_t Duty;
 };
 
 #endif /* PWMCONTROLLER_H_ */

@@ -38,7 +38,6 @@ ISR(USART0_RX_vect) {// There are two interrupts available,
 	uint8_t data = UDR0;
 	if (data == 'd'){
 		commsController->jsonComplete = true;
-		commsController->transmit('b');
 	}
 }
 
@@ -47,14 +46,15 @@ ISR(TIMER0_OVF_vect){
 	PORTA |= (1<<PORTA2);
 }
 
-ISR(TIMER1_OVF_vect){
+ISR(TIMER1_COMPA_vect){
+	++speedController->timerCount;
 	speedController->measureSpeed();
 }
 
 // ISR for hall sensor.
 ISR(PCINT0_vect) {
 	if((PINA)&(1<<PINA0)) {
-		TOCPMCOE &= ~(1<<TOCC7OE);	//disable TOCC1 at PB2
+		TOCPMCOE &= ~ (1<<TOCC7OE);	//disable TOCC1 at PB2
 		TOCPMCOE |= (1<<TOCC2OE);	//enable TOCC0 at PA3
 		PORTB &= ~(1<<PORTB2);		//disable PB2
 		} else {
@@ -92,6 +92,8 @@ int main(void)
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
 
+	speedController->setFanSpeed(40);
+
 	//tinyjsonpp* json = new tinyjsonpp(false, 255);
 
 	//char* string = static_cast<char*>(calloc(60, sizeof(char)));
@@ -112,8 +114,9 @@ int main(void)
 	//json->insert("req", "120", "3/spd");
 	//json->insert("cur", "123", "3/spd");
 	//val = json->getValue("cur", "3/spd");
-    while (1) 
+    while (1)                  
     {
-		
-    }
+		//commsController->transmit(speedController->currentSpeed);
+		//commsController->transmit('b');
+	}
 }
