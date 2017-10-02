@@ -93,6 +93,8 @@ int main(void)
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
 
+	speedController->setFanSpeed(40);
+
 	//tinyjsonpp* json = new tinyjsonpp(false, 255);
 
 	//char* string = static_cast<char*>(calloc(60, sizeof(char)));
@@ -113,8 +115,8 @@ int main(void)
 	//json->insert("req", "120", "3/spd");
 	//json->insert("cur", "123", "3/spd");
 	//val = json->getValue("cur", "3/spd");
-    while (1) 
+    while (1)                  
     {
-		commsController->transmit(speedController->currentSpeed);
+		//commsController->transmit(speedController->currentSpeed);
 	}
 }

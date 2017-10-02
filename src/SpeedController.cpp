@@ -36,11 +36,12 @@ void SpeedController::setFanSpeed(uint8_t speed) {
 	// Will need to invoke error handler for these cases.
 
 	this->requestedSpeed = speed;
+	this->pwmController->SetDutyCycle(speed);
 	// Keep setting the duty cycle until we get a currentSpeed that is within the bounds of the requested speed.
 	//uint16_t dutyCycle = pid_Controller(this->requestedSpeed, this->currentSpeed, &this->pid);
 
 	// Only need to reset integrator is the value overflows.
-	pid_Reset_Integrator(&this->pid);
+	//pid_Reset_Integrator(&this->pid);
 }
 
 void SpeedController::measureSpeed() {
