@@ -34,11 +34,14 @@ ISR(USART0_RX_vect) {// There are two interrupts available,
 	//but atmel in only accepting USART0_RX_vect which i cant find in the data sheet
 	//while (!(UCSR0A & (1<<RXC0)))//loop waits for completion of incoming
 	
-	//commsController->json->parse(UDR0);
 	uint8_t data = UDR0;
 	if (data == 'd'){
 		commsController->jsonComplete = true;
 		commsController->transmit(speedController->currentSpeed);
+	}
+
+	if (data > 30) {
+		commsController->json->addCharToJSONString(data);
 	}
 }
 
