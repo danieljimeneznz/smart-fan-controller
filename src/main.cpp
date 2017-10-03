@@ -38,6 +38,7 @@ ISR(USART0_RX_vect) {// There are two interrupts available,
 	uint8_t data = UDR0;
 	if (data == 'd'){
 		commsController->jsonComplete = true;
+		commsController->transmit(speedController->currentSpeed);
 	}
 }
 
@@ -57,7 +58,7 @@ ISR(PCINT0_vect) {
 		TOCPMCOE &= ~ (1<<TOCC7OE);	//disable TOCC1 at PB2
 		TOCPMCOE |= (1<<TOCC2OE);	//enable TOCC0 at PA3
 		PORTB &= ~(1<<PORTB2);		//disable PB2
-		} else {
+	} else {
 		TOCPMCOE &= ~(1<<TOCC2OE);	//disable TOCC0 at PA3
 		TOCPMCOE |= (1<<TOCC7OE);	//enable TOCC1 at PB2
 		PORTA &= ~(1<<PORTA3);		//disable PA3
@@ -92,7 +93,7 @@ int main(void)
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
 
-	speedController->setFanSpeed(40);
+	speedController->setFanSpeed(255);
 
 	//tinyjsonpp* json = new tinyjsonpp(false, 255);
 
@@ -116,7 +117,7 @@ int main(void)
 	//val = json->getValue("cur", "3/spd");
     while (1)                  
     {
-		//commsController->transmit(speedController->currentSpeed);
 		//commsController->transmit('b');
+		commsController->run();
 	}
 }

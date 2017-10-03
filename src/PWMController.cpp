@@ -48,6 +48,21 @@ PWMController::PWMController() {
 void PWMController::SetDutyCycle(uint8_t Duty){
 	OCR0A = Duty;
 	OCR0B = Duty;
-
+	
 	this->Duty = Duty;
+
+	//if(this->Duty != 0) {
+	uint8_t i = 0;
+		for (i = 0; i < 255; ++i) {
+			if((PINA)&(1<<PINA0)) {
+				TOCPMCOE &= ~ (1<<TOCC7OE);	//disable TOCC1 at PB2
+				TOCPMCOE |= (1<<TOCC2OE);	//enable TOCC0 at PA3
+				PORTB &= ~(1<<PORTB2);		//disable PB2
+			} else {
+				TOCPMCOE &= ~(1<<TOCC2OE);	//disable TOCC0 at PA3
+				TOCPMCOE |= (1<<TOCC7OE);	//enable TOCC1 at PB2
+				PORTA &= ~(1<<PORTA3);		//disable PA3
+			}
+		}
+	//}
 }
