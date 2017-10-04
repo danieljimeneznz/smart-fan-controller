@@ -1,0 +1,11 @@
+
+
+ADCSRA |= (1<<ADEN); // Enable ADC.
+
+ADCSRA |= ((1<<ADPS2)|(1<<ADPS1)|(0<<ADPS0); // Setting adc prescaler to 64 bit.
+
+// Do not need to set ref voltage as default is Vcc.
+
+// pb0 = voltage input, pb1 = current measurement.
+
+A
