@@ -96,7 +96,7 @@ int main(void)
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
 
-	speedController->setFanSpeed(255);
+	speedController->setFanSpeed(20);
 
 	//tinyjsonpp* json = new tinyjsonpp(false, 255);
 
