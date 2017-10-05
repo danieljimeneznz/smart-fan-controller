@@ -18,6 +18,8 @@
 #include "SpeedController.h"
 #include "ErrorHandler.h"
 
+#include "tinyjsonpp.h"
+
 // Pointers used by ISR.
 CommsController* commsController;
 PowerController* powerController;
@@ -72,51 +74,63 @@ ISR(PCINT0_vect) {
 
 int main(void)
 {
-	// Instantiate objects in stack.
-	CommsController commsC(MYBRR);
-	PowerController powerC;
-	PWMController pwmC;
-	SpeedController speedC;
-	ErrorHandler errorH;
+	//// Instantiate objects in stack.
+	//CommsController commsC(MYBRR);
+	//PowerController powerC;
+	//PWMController pwmC;
+	//SpeedController speedC;
+	//ErrorHandler errorH;
 
-	// Set relationship between objects
-	commsC.setControllerPointers(&speedC, &powerC, &errorH);
-	powerC.setControllerPointers(&errorH);
-	speedC.setControllerPointers(&pwmC, &errorH);
-	errorH.setControllerPointers(&commsC);
-	
-	// Set ISR pointers
-	commsController = &commsC;
-	powerController = &powerC;
-	pwmController = &pwmC;
-	speedController = &speedC;
-	errorHandler = &errorH;
+	//// Set relationship between objects
+	//commsC.setControllerPointers(&speedC, &powerC, &errorH);
+	//powerC.setControllerPointers(&errorH);
+	//speedC.setControllerPointers(&pwmC, &errorH);
+	//errorH.setControllerPointers(&commsC);
 
-	// Enable Interrupts
-	sei(); // Set global interrupt enable.
+	//// Set ISR pointers
+	//commsController = &commsC;
+	//powerController = &powerC;
+	//pwmController = &pwmC;
+	//speedController = &speedC;
+	//errorHandler = &errorH;
 
-	speedController->setFanSpeed(255);
+	//// Enable Interrupts
+	//sei(); // Set global interrupt enable.
 
-	//tinyjsonpp* json = new tinyjsonpp(false, 255);
+	//speedController->setFanSpeed(255);
+
+	tinyjsonpp* json = new tinyjsonpp(false, 255);
 
 	//char* string = static_cast<char*>(calloc(60, sizeof(char)));
-	//string = "{\"3\":{\"spd\":{\"req\":\"120\",\"cur\":\"123\"},\"pwr\":{\"req\":\"360\"}}}";
-	//string = "{\"3\":{}}";
+	//const char string = "{\"3\":{\"spd\":{\"req\":\"120\",\"cur\":\"123\"},\"pwr\":{\"req\":\"360\"}}}";
+	//const char* string = "{\"3\":{}}";
 	//for (unsigned int i = 0; i < strlen(string); i++) {
-		//json->parse(string[i]);
+		//json->addCharToJSONString(string[i]);
 	//}
 
 	//memset(string, 0, strlen(string));
 	//free(string);
+	////json->reset();
+	////json->insert("3", "{}", "");
 
 	//Value val;
-	//val = json->getValue("req");
-	//val = json->getValue("req", "3/pwr");
-	//json->insert("hello", "world", "3/pwr");
-	//json->insert("spd", "{}", "3");
-	//json->insert("req", "120", "3/spd");
-	//json->insert("cur", "123", "3/spd");
+	////val = json->getValue("req");
+	////val = json->getValue("req", "3/pwr");
+	////json->insert("hello", "world", "3/pwr");
+
+	const char* root = "3";
+	const char* spd = "spd";
+	const char* obj = "{}";
+	json->reset();
+	json->insert(root, obj, '\0');
+	json->insert(spd, obj, root);
+
+	const char* req = "req";
+	const char* req_value = "120";
+	json->insert(req, req_value, spd);
+	//json->insert("cur", "123", "/spd");
 	//val = json->getValue("cur", "3/spd");
+
     while (1)                  
     {
 		//commsController->transmit(speedController->currentSpeed);

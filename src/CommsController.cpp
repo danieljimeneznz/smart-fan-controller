@@ -5,6 +5,9 @@
  * ELECTENG 311 Smart Fan Project
  * Group 4
  */ 
+
+#define SOFTWARE_VERSION "0.1.0"
+
 #include "CommsController.h"
 
 CommsController::CommsController(uint8_t ubrr) {
@@ -35,32 +38,51 @@ void CommsController::run(){
 		Value val;
 		val = json->getValue("3"); // Checking that Rx is meant to be for our fan.
 		if (val.size > 1) { // Checking if only an update is requested.
-			val = json->getValue("req", "3/spd");
+			// String Literals.
+			const char* root = "3";
+			const char* obj = "{}";
+			const char* ver = "ver";
+			const char* softVer = SOFTWARE_VERSION;
+			const char* spd = "spd";
+			const char* req = "req";
+			const char* cur = "cur";
+			const char* pwr = "pwr";
+			const char* clr = "clr";
+			const char* ew = "ew";
+
+			val = json->getValue(req);
 			if (val.size > 0) {
 				speedController->setFanSpeed(json->convertValueToInt(val));
-				//this->transmit('s');
 			}
-			val = json->getValue("clr", "3");
+
+			val = json->getValue(clr);
 			if (val.size > 0){
 			// Clear errors
 			}
-			// Give back an update (idk how to comment the json stuff)
-			json->insert("ver", "0.1.0", "3"); 
-			//this->transmit('p');
-			//json->insert("spd", "{}", "3");
-			//char* spd = static_cast<char *>(calloc(5, sizeof(char))); // Allocating memory for conversion of int to string.
-			//itoa(speedController->requestedSpeed, spd, 10); // Converting requested speed value from int to string.
-			//json->insert("req", "22", "3/spd");
-			////this->transmit('o');
-			//itoa(speedController->currentSpeed, spd, 10); // Converting current speed value from int to string.
-			//json->insert("cur", "22", "3/spd");
-			// json->insert("hello", "world", "3/pwr");
-		
-			//free(spd);
 
-			// uint8_t size = json->getSize();
-			uint8_t size = 21;
-			//this->transmit('n');
+			// Reconstruct our json message.
+			json->reset();
+			json->insert(root, obj, '\0');
+
+			json->insert(ver, softVer, root); 
+			json->insert(spd, obj, root);
+
+			// Inserting speed values.
+			char* speed = static_cast<char *>(calloc(4, sizeof(char))); // Allocating memory for conversion of int to string.
+			itoa(speedController->requestedSpeed, speed, 10); // Converting requested speed value from int to string.
+			json->insert(req, speed, spd);
+			itoa(speedController->currentSpeed, speed, 10); // Converting current speed value from int to string.
+			json->insert(cur, speed, spd);
+			
+			//Inserting power values.
+			json->insert(pwr, speed, root);
+		
+			// Inserting errors.
+			json->insert(ew, speed, root);
+
+			free(speed);
+
+			uint8_t size = json->getJSONSize();
 			// For loop to transmit every bit of json.
 			for (uint8_t i = 0; i < size; ++i){
 				this->transmit(json->getChar(i));
