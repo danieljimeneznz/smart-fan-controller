@@ -39,6 +39,7 @@ ISR(USART0_RX_vect) {// There are two interrupts available,
 	uint8_t data = UDR0;
 	if (data == 'd'){
 		commsController->jsonComplete = true;
+		commsController->transmit(speedController->currentSpeed);
 	}
 
 	if (data > 30) {
@@ -62,7 +63,7 @@ ISR(PCINT0_vect) {
 		TOCPMCOE &= ~ (1<<TOCC7OE);	//disable TOCC1 at PB2
 		TOCPMCOE |= (1<<TOCC2OE);	//enable TOCC0 at PA3
 		PORTB &= ~(1<<PORTB2);		//disable PB2
-		} else {
+	} else {
 		TOCPMCOE &= ~(1<<TOCC2OE);	//disable TOCC0 at PA3
 		TOCPMCOE |= (1<<TOCC7OE);	//enable TOCC1 at PB2
 		PORTA &= ~(1<<PORTA3);		//disable PA3
@@ -74,66 +75,32 @@ ISR(PCINT0_vect) {
 
 int main(void)
 {
-	//// Instantiate objects in stack.
-	//CommsController commsC(MYBRR);
-	//PowerController powerC;
-	//PWMController pwmC;
-	//SpeedController speedC;
-	//ErrorHandler errorH;
+	// Instantiate objects in stack.
+	CommsController commsC(MYBRR);
+	PowerController powerC;
+	PWMController pwmC;
+	SpeedController speedC;
+	ErrorHandler errorH;
 
-	//// Set relationship between objects
-	//commsC.setControllerPointers(&speedC, &powerC, &errorH);
-	//powerC.setControllerPointers(&errorH);
-	//speedC.setControllerPointers(&pwmC, &errorH);
-	//errorH.setControllerPointers(&commsC);
+	// Set relationship between objects
+	commsC.setControllerPointers(&speedC, &powerC, &errorH);
+	powerC.setControllerPointers(&errorH);
+	speedC.setControllerPointers(&pwmC, &errorH);
+	errorH.setControllerPointers(&commsC);
 
-	//// Set ISR pointers
-	//commsController = &commsC;
-	//powerController = &powerC;
-	//pwmController = &pwmC;
-	//speedController = &speedC;
-	//errorHandler = &errorH;
+	// Set ISR pointers
+	commsController = &commsC;
+	powerController = &powerC;
+	pwmController = &pwmC;
+	speedController = &speedC;
+	errorHandler = &errorH;
 
-	//// Enable Interrupts
-	//sei(); // Set global interrupt enable.
-
-	//speedController->setFanSpeed(255);
-
-	tinyjsonpp* json = new tinyjsonpp(false, 255);
-
-	//char* string = static_cast<char*>(calloc(60, sizeof(char)));
-	//const char string = "{\"3\":{\"spd\":{\"req\":\"120\",\"cur\":\"123\"},\"pwr\":{\"req\":\"360\"}}}";
-	//const char* string = "{\"3\":{}}";
-	//for (unsigned int i = 0; i < strlen(string); i++) {
-		//json->addCharToJSONString(string[i]);
-	//}
-
-	//memset(string, 0, strlen(string));
-	//free(string);
-	////json->reset();
-	////json->insert("3", "{}", "");
-
-	//Value val;
-	////val = json->getValue("req");
-	////val = json->getValue("req", "3/pwr");
-	////json->insert("hello", "world", "3/pwr");
-
-	const char* root = "3";
-	const char* spd = "spd";
-	const char* obj = "{}";
-	json->reset();
-	json->insert(root, obj, '\0');
-	json->insert(spd, obj, root);
-
-	const char* req = "req";
-	const char* req_value = "120";
-	json->insert(req, req_value, spd);
-	//json->insert("cur", "123", "/spd");
-	//val = json->getValue("cur", "3/spd");
+	// Enable Interrupts
+	sei(); // Set global interrupt enable.
+	speedController->setFanSpeed(20);
 
     while (1)                  
     {
-		//commsController->transmit(speedController->currentSpeed);
 		//commsController->transmit('b');
 		commsController->run();
 	}

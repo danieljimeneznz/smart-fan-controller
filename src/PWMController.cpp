@@ -19,7 +19,7 @@ PWMController::PWMController() {
 	TCCR0A |= (1<<WGM01)|(1<<WGM00);
 
 	//Pre-scaling
-	TCCR0B |= (1<<CS01)|(1<<CS00);
+	TCCR0B |= (1<<CS01);
 
 	// clear OC0A on compare match with OCR0A
 	TCCR0A |= (1 << COM0A1);
@@ -46,8 +46,31 @@ PWMController::PWMController() {
 }
 
 void PWMController::SetDutyCycle(uint8_t Duty){
+	// 'kick' start the motor
+	if(Duty > 0) {
+		// Disable Pin Change Interrupt
+		GIMSK &= ~(1<<PCIE0);
+		
+		OCR0A = 255;
+		OCR0B = 255;
+		for (uint8_t i = 0; i < 255; ++i) {
+			if((PINA)&(1<<PINA0)) {
+				TOCPMCOE &= ~ (1<<TOCC7OE);	//disable TOCC1 at PB2
+				TOCPMCOE |= (1<<TOCC2OE);	//enable TOCC0 at PA3
+				PORTB &= ~(1<<PORTB2);		//disable PB2
+			} else {
+				TOCPMCOE &= ~(1<<TOCC2OE);	//disable TOCC0 at PA3
+				TOCPMCOE |= (1<<TOCC7OE);	//enable TOCC1 at PB2
+				PORTA &= ~(1<<PORTA3);		//disable PA3
+			}
+		}
+
+		// Re-Enable Pin Change Interrupt
+		GIMSK |= (1<<PCIE0);
+	}
+
 	OCR0A = Duty;
 	OCR0B = Duty;
-
+	
 	this->Duty = Duty;
 }
