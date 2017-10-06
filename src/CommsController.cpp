@@ -5,10 +5,11 @@
  * ELECTENG 311 Smart Fan Project
  * Group 4
  */ 
-
-#define SOFTWARE_VERSION "0.1.0"
-
 #include "CommsController.h"
+#include <avr/eeprom.h>
+
+// Retrieved from http://www.edaboard.com/entry862.html
+#define read_eeprom_array(address,value_p,length) eeprom_read_block ((void *)value_p, (const void *)address, length)
 
 CommsController::CommsController(uint8_t ubrr) {
 	UCSR0B |= (1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0); // Enable Rx, Tx and Rx Complete Interrupt.
@@ -19,8 +20,8 @@ CommsController::CommsController(uint8_t ubrr) {
 
 	this->jsonComplete = false;
 
-	// Create a new tinyJSONpp Object.
-	json = new tinyjsonpp(false, 255);
+	// Create a new tinyJSONpp Object. (accepts max json size of 150 due to current max json object size of 127 bytes).
+	json = new tinyjsonpp(false, 150);
 }
 
 void CommsController::transmit(uint8_t data) {
@@ -33,54 +34,96 @@ void CommsController::transmit(uint8_t data) {
 
 void CommsController::run(){
 
-	// Checking if Rx is complete
+	// Checking if Rx is complete.
 	if (this->jsonComplete) {
 		Value val;
 		val = json->getValue("3"); // Checking that Rx is meant to be for our fan.
 		if (val.size > 1) { // Checking if only an update is requested.
-			// String Literals.
-			const char* root = "3";
-			const char* obj = "{}";
-			const char* ver = "ver";
-			const char* softVer = SOFTWARE_VERSION;
-			const char* spd = "spd";
-			const char* req = "req";
-			const char* cur = "cur";
-			const char* pwr = "pwr";
-			const char* clr = "clr";
-			const char* ew = "ew";
+			// Allocate heap space for reading EEPROM information into.
+			char* key = static_cast<char *>(calloc(4, sizeof(char))); // Allocating 4 bytes for the key.
+			char* value = static_cast<char *>(calloc(42, sizeof(char))); // Allocating 50 bytes for the value. (Since max is 42 bytes).
+			char* parent = static_cast<char *>(calloc(4, sizeof(char))); // Allocating 4 bytes for the parent.
 
-			val = json->getValue(req);
+			// Set current key to req.
+			read_eeprom_array(19, key, 4);
+			val = json->getValue(key);
 			if (val.size > 0) {
 				speedController->setFanSpeed(json->convertValueToInt(val));
 			}
 
-			val = json->getValue(clr);
+			// Set current key to clr.
+			read_eeprom_array(31, key, 4);
+			val = json->getValue(key);
 			if (val.size > 0){
-			// Clear errors
+			// Clear errors.
 			}
 
 			// Reconstruct our json message.
 			json->reset();
-			json->insert(root, obj, '\0');
 
-			json->insert(ver, softVer, root); 
-			json->insert(spd, obj, root);
+			// ------------- ROOT JSON SETUP ---------------
+			// Set key to root.
+			read_eeprom_array(0, key, 2);
+			// Set value to obj.
+			read_eeprom_array(2, value, 3);
+			json->insert(key, value, '\0');
 
-			// Inserting speed values.
-			char* speed = static_cast<char *>(calloc(4, sizeof(char))); // Allocating memory for conversion of int to string.
-			itoa(speedController->requestedSpeed, speed, 10); // Converting requested speed value from int to string.
-			json->insert(req, speed, spd);
-			itoa(speedController->currentSpeed, speed, 10); // Converting current speed value from int to string.
-			json->insert(cur, speed, spd);
+			// ------------- SOFTWARE VERSION --------------
+			// Set key to ver.
+			read_eeprom_array(5, key, 4);
+			// Set value to softVer.
+			read_eeprom_array(9, value, 6);
+			// Set parent to root.
+			read_eeprom_array(0, parent, 2);
+			json->insert(key, value, parent); 
+
+			// ------------------ POWER --------------------
+			// Set key to pwr.
+			read_eeprom_array(27, key, 4);
+			// TODO: SET VALUE TO VALUE OF POWER.
+			itoa(speedController->requestedSpeed, value, 10); // Converting requested speed value from int to string.
+			// Set parent to root.
+			read_eeprom_array(0, parent, 2);
+			// Inserting power values.
+			json->insert(key, value, parent);
 			
-			//Inserting power values.
-			json->insert(pwr, speed, root);
-		
+			// ------------------ ERRORS -------------------
+			// Set key to ew.
+			read_eeprom_array(35, key, 3);
+			// TODO: SET VALUE TO THE CORRECT ERROR.
+			itoa(speedController->requestedSpeed, value, 10); // Converting requested speed value from int to string.
+			// Set parent to root.
+			read_eeprom_array(0, parent, 2);	
 			// Inserting errors.
-			json->insert(ew, speed, root);
+			json->insert(key, value, parent);
 
-			free(speed);
+			// ------------------ SPEED --------------------
+			// Set key to spd.
+			read_eeprom_array(15, key, 4);
+			// Set value to obj.
+			read_eeprom_array(2, value, 3);
+			// Set parent to root.
+			read_eeprom_array(0, parent, 2);
+			// Setup spd object.
+			json->insert(key, value, parent);
+
+			// Set key to req.
+			read_eeprom_array(19, key, 4);
+			// Set req speed value.
+			itoa(speedController->requestedSpeed, value, 10); // Converting requested speed value from int to string.
+			// Set parent to spd.
+			read_eeprom_array(15, parent, 4);
+			json->insert(key, value, parent);
+
+			// Set key to cur.
+			read_eeprom_array(23, key, 4);
+			itoa(speedController->currentSpeed, value, 10); // Converting current speed value from int to string.
+			// Parent already correct.
+			json->insert(key, value, parent);
+
+			free(key);
+			free(value);
+			free(parent);
 
 			uint8_t size = json->getJSONSize();
 			// For loop to transmit every bit of json.

@@ -8,6 +8,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/eeprom.h>
 #include <string.h>
 
 #include "prototypes.h"
@@ -19,6 +20,64 @@
 #include "ErrorHandler.h"
 
 #include "tinyjsonpp.h"
+
+//**************************************
+// EEPROM STRING LITERAL STORAGE
+//**************************************
+#define SOFTWARE_VERSION "0.1.0"
+
+// The struct is defined so that the strings are stored in EEPROM in a particular order.
+struct {
+	// TYPE | NAME | EEPROM LOCATION
+	char root[2]; // 0
+	char obj[3]; // 2
+	char ver[4]; // 5
+	char softVer[6]; // 9
+	char spd[4]; // 15
+	char req[4]; // 19
+	char cur[4]; // 23
+	char pwr[4]; // 27
+	char clr[4]; // 31
+	char ew[3]; // 35
+
+	// Error Messages
+	char reqTooLow[14]; // 38
+	char blockedDuct[16]; // 52
+	char lockedRotor[16]; // 68
+
+	// Combination error messages
+	char reqDuct[28]; // 84
+	char reqRotor[28]; // 112
+	char blockedRotor[30]; // 140
+	char allErrors[42]; // 170
+} EEdata EEMEM = {
+	.root =  "3",
+	.obj = "{}",
+	.ver = "ver",
+	.softVer = SOFTWARE_VERSION,
+	.spd = "spd",
+	.req = "req",
+	.cur = "cur",
+	.pwr = "pwr",
+	.clr = "clr",
+	.ew = "ew",
+
+	// Error Messages
+	.reqTooLow = "[\"reqTooLow\"]",
+	.blockedDuct = "[\"blockedDuct\"]",
+	.lockedRotor = "[\"lockedRotor\"]",
+
+	.reqDuct = "[\"reqTooLow\",\"blockedDuct\"]",
+	.reqRotor = "[\"reqTooLow\",\"lockedRotor\"]",
+	.blockedRotor = "[\"blockedDuct\",\"lockedRotor\"]",
+	.allErrors = "[\"reqTooLow\",\"blockedDuct\",\"lockedRotor\"]"
+};
+
+
+
+//**************************************
+// MAIN PROGRAM START
+//**************************************
 
 // Pointers used by ISR.
 CommsController* commsController;
@@ -98,10 +157,15 @@ int main(void)
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
 	speedController->setFanSpeed(20);
+	//const char* string = "{\"3\":{}}";
+	//for (uint8_t i = 0; i < strlen(string); ++i) {
+		//commsController->json->addCharToJSONString(string[i]);
+	//}
 
     while (1)                  
     {
 		//commsController->transmit('b');
+		//commsController->jsonComplete = true;
 		commsController->run();
 	}
 }
