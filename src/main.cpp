@@ -112,7 +112,6 @@ ISR(TIMER0_OVF_vect){
 }
 
 ISR(TIMER1_COMPA_vect){
-	++speedController->timerCount;
 	speedController->measureSpeed();
 }
 

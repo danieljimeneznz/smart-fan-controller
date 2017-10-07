@@ -31,15 +31,8 @@ public:
 	// Measure the speed of the fan using the Hall sensor. Stores the speed in the currentSpeed.
 	void measureSpeed();
 
-	// Returns the requested speed.
-	uint8_t getRequestedSpeed();
-
-	// Returns the current speed.
-	uint8_t getCurrentSpeed();
-
 	// Variables used to count speed.
 	uint16_t speedCount;
-	uint8_t timerCount;
 
 	// Speed variables.
 	uint8_t currentSpeed;

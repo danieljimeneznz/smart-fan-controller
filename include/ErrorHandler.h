@@ -18,6 +18,10 @@ class ErrorHandler {
 public:
 	ErrorHandler();
 	void setControllerPointers(CommsController* commsController);
+
+	bool reqTooLow;
+	bool blockedDuct;
+	bool lockedRotor;
 private:
 	CommsController* commsController;
 };

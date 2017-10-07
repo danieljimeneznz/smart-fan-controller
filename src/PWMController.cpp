@@ -43,16 +43,25 @@ PWMController::PWMController() {
 
 	// Enable Pin Change Interrupt
 	GIMSK |= (1<<PCIE0);
+
+	// Set initial Variables.
+	this->Duty = 0;
 }
 
 void PWMController::SetDutyCycle(uint8_t Duty){
+	OCR0A = Duty;
+	OCR0B = Duty;
+
+	this->Duty = Duty;
+
 	// 'kick' start the motor
 	if(Duty > 0) {
 		// Disable Pin Change Interrupt
 		GIMSK &= ~(1<<PCIE0);
 		
-		OCR0A = 255;
-		OCR0B = 255;
+		// Set duty cycle to 255 for a couple of cycles to start the motor.
+		//OCR0A = 255;
+		//OCR0B = 255;
 		for (uint8_t i = 0; i < 255; ++i) {
 			if((PINA)&(1<<PINA0)) {
 				TOCPMCOE &= ~ (1<<TOCC7OE);	//disable TOCC1 at PB2
@@ -67,10 +76,5 @@ void PWMController::SetDutyCycle(uint8_t Duty){
 
 		// Re-Enable Pin Change Interrupt
 		GIMSK |= (1<<PCIE0);
-	}
-
-	OCR0A = Duty;
-	OCR0B = Duty;
-	
-	this->Duty = Duty;
+	}	
 }

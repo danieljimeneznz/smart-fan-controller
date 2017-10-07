@@ -36,9 +36,9 @@ void CommsController::run(){
 
 	// Checking if Rx is complete.
 	if (this->jsonComplete) {
-		Value val;
-		val = json->getValue("3"); // Checking that Rx is meant to be for our fan.
-		if (val.size > 1) { // Checking if only an update is requested.
+		if (json->getChar(2) == '3') { // Checking that Rx is meant to be for our fan.
+			Value val;
+
 			// Allocate heap space for reading EEPROM information into.
 			char* key = static_cast<char *>(calloc(4, sizeof(char))); // Allocating 4 bytes for the key.
 			char* value = static_cast<char *>(calloc(42, sizeof(char))); // Allocating 50 bytes for the value. (Since max is 42 bytes).
