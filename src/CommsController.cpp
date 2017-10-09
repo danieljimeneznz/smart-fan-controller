@@ -131,6 +131,7 @@ void CommsController::run(){
 				this->transmit(json->getChar(i));
 			}
 		}
+		json->empty(); // Reset the JSON string so the Heap does not overflow!
 		this->jsonComplete = false; // Resetting json complete.
 	}
 }
