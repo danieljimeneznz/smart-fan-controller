@@ -10,7 +10,7 @@
 
 SpeedController::SpeedController() {
 	// Initialize the PID controller.
-	pid_Init(60, 40, 0, &this->pid);
+	pid_Init(95, 16, 0, &this->pid);
 
 	// Setup timer used to measure speed of the fan.
 	TCCR1B |= (1<<CS12)|(0<<CS11)|(1<<CS10); // Set clock Prescaler to 1024.

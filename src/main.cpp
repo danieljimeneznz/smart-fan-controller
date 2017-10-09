@@ -96,12 +96,14 @@ ISR(USART0_RX_vect) {// There are two interrupts available,
 	//while (!(UCSR0A & (1<<RXC0)))//loop waits for completion of incoming
 	
 	uint8_t data = UDR0;
-	if (data == 'd'){
-		commsController->jsonComplete = true;
-		commsController->transmit(speedController->currentSpeed);
-	}
+	//if (data == 'd'){
+		//commsController->jsonComplete = true;
+		//commsController->transmit(speedController->currentSpeed);
+	//}
 
-	if (data > 30) {
+	if (data == 'd') {
+		commsController->jsonComplete = true;
+	} else {
 		commsController->json->addCharToJSONString(data);
 	}
 }
@@ -155,7 +157,7 @@ int main(void)
 
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
-	speedController->setFanSpeed(20);
+	speedController->setFanSpeed(250);
 	//const char* string = "{\"3\":{}}";
 	//for (uint8_t i = 0; i < strlen(string); ++i) {
 		//commsController->json->addCharToJSONString(string[i]);
