@@ -27,7 +27,6 @@ PowerController::PowerController() {
 				(1<<ADPS2)| // ADC Pre-scaler Select Bits (128)
 				(1<<ADPS1)|
 				(1<<ADPS0);
-	return;
 }
 
 void PowerController::setControllerPointers(ErrorHandler* errorHandler) {

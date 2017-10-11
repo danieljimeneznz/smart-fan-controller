@@ -19,11 +19,12 @@ extern "C" {
 
 #include "PWMController.h"
 #include "ErrorHandler.h"
+#include "CommsController.h"
 
 class SpeedController {
 public:
 	SpeedController();
-	void setControllerPointers(PWMController* pwmController, ErrorHandler* errorHandler);
+	void setControllerPointers(PWMController* pwmController, ErrorHandler* errorHandler, CommsController* commsController);
 
 	// Sets the fans speed provided a speed.
 	void setFanSpeed(uint8_t speed);
@@ -41,6 +42,7 @@ public:
 private:
 	PWMController* pwmController;
 	ErrorHandler* errorHandler;
+	CommsController* commsController;
 
 	// PID controller.
 	PID_DATA pid;

@@ -90,23 +90,21 @@ ISR(ADC_vect) {
 	//powerController->readVoltage(11);
 }
 
-ISR(USART0_RX_vect) {// There are two interrupts available,
-	//one is USART0_RXC_vect (waits for completion) and USART0_RXs_vect (waits for start of incoming)
-	//but atmel in only accepting USART0_RX_vect which i cant find in the data sheet
-	//while (!(UCSR0A & (1<<RXC0)))//loop waits for completion of incoming
-	
-	uint8_t data = UDR0;
-	//if (data == 'd'){
-		//commsController->jsonComplete = true;
+//ISR(USART0_RX_vect) {// There are two interrupts available,
+	////one is USART0_RXC_vect (waits for completion) and USART0_RXs_vect (waits for start of incoming)
+	////but atmel in only accepting USART0_RX_vect which i cant find in the data sheet
+	////while (!(UCSR0A & (1<<RXC0)))//loop waits for completion of incoming
+	//
+	//uint8_t data = UDR0;
+//
+	//if (data == 'd') {
+		////commsController->jsonComplete = true;
+		//commsController->transmit('b');
 		//commsController->transmit(speedController->currentSpeed);
+	//} else {
+		////commsController->json->addCharToJSONString(data);
 	//}
-
-	if (data == 'd') {
-		commsController->jsonComplete = true;
-	} else {
-		commsController->json->addCharToJSONString(data);
-	}
-}
+//}
 
 ISR(TIMER0_OVF_vect){
 	PORTA |= (1<<PORTA1);
@@ -145,7 +143,7 @@ int main(void)
 	// Set relationship between objects
 	commsC.setControllerPointers(&speedC, &powerC, &errorH);
 	powerC.setControllerPointers(&errorH);
-	speedC.setControllerPointers(&pwmC, &errorH);
+	speedC.setControllerPointers(&pwmC, &errorH, &commsC);
 	errorH.setControllerPointers(&commsC);
 
 	// Set ISR pointers
@@ -167,6 +165,6 @@ int main(void)
     {
 		//commsController->transmit('b');
 		//commsController->jsonComplete = true;
-		commsController->run();
+		//commsController->run();
 	}
 }

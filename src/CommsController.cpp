@@ -4,7 +4,7 @@
  * Created: 02-Sept-17 13:02:26
  * ELECTENG 311 Smart Fan Project
  * Group 4
- */ 
+ */
 #include "CommsController.h"
 #include <avr/eeprom.h>
 
@@ -15,8 +15,7 @@ CommsController::CommsController(uint8_t ubrr) {
 	UCSR0B |= (1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0); // Enable Rx, Tx and Rx Complete Interrupt.
 	UBRR0H = (ubrr>>8);
 	UBRR0L = ubrr;
-	// Select 8-bit data frame, double stop bit and no parity using UCSR0C (Default values are what we want).
-	UCSR0C |= (1<<USBS0); // Two stop bits.
+	// Select 8-bit data frame, single stop bit and no parity using UCSR0C (Default values are what we want).
 
 	this->jsonComplete = false;
 
@@ -75,7 +74,7 @@ void CommsController::run(){
 			read_eeprom_array(9, value, 6);
 			// Set parent to root.
 			read_eeprom_array(0, parent, 2);
-			json->insert(key, value, parent); 
+			json->insert(key, value, parent);
 
 			// ------------------ POWER --------------------
 			// Set key to pwr.
@@ -86,14 +85,14 @@ void CommsController::run(){
 			read_eeprom_array(0, parent, 2);
 			// Inserting power values.
 			json->insert(key, value, parent);
-			
+
 			// ------------------ ERRORS -------------------
 			// Set key to ew.
 			read_eeprom_array(35, key, 3);
 			// TODO: SET VALUE TO THE CORRECT ERROR.
 			itoa(speedController->requestedSpeed, value, 10); // Converting requested speed value from int to string.
 			// Set parent to root.
-			read_eeprom_array(0, parent, 2);	
+			read_eeprom_array(0, parent, 2);
 			// Inserting errors.
 			json->insert(key, value, parent);
 

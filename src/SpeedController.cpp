@@ -4,7 +4,7 @@
  * Created: 02-Sept-17 13:02:26
  * ELECTENG 311 Smart Fan Project
  * Group 4
- */ 
+ */
 
 #include "SpeedController.h"
 
@@ -26,16 +26,20 @@ SpeedController::SpeedController() {
 	this->requestedSpeed = 0;
 }
 
-void SpeedController::setControllerPointers(PWMController* pwmController, ErrorHandler* errorHandler) {
+void SpeedController::setControllerPointers(PWMController* pwmController, ErrorHandler* errorHandler, CommsController* commsController) {
 	this->pwmController = pwmController;
 	this->errorHandler = errorHandler;
+	this->commsController = commsController;
 }
 
 void SpeedController::setFanSpeed(uint8_t speed) {
 	this->requestedSpeed = speed;
 
+	commsController->transmit('h');
+
 	// If zero speed is requested then set the duty cycle to zero.
 	if(speed == 0) {
+		commsController->transmit('s');
 		pwmController->SetDutyCycle(0);
 		return;
 	}
@@ -53,23 +57,28 @@ void SpeedController::setFanSpeed(uint8_t speed) {
 	uint8_t lowerSpeed = speed - (speed/10);
 	uint8_t upperSpeed = speed + (speed/10);
 	uint8_t transient = 0; // Used to perform the loop two more times until transients have settled down.
+
+	//commsController->transmit('a');
 	do {
 		// Wait for a speed measurement to be taken.
-		while(this->speedCount > 0) {
+		//while(this->speedCount > 0) {
+			//commsController->transmit(this->speedCount);
 			// Do nothing.
-		}
+		//}
 
 		// Set a new duty cycle based on the new measured speed.
 		uint16_t dutyCycle = pid_Controller(speed, this->currentSpeed, &this->pid);
 
 		if(dutyCycle > 255) {
-			dutyCycle = 255;
+			uint8_t dutyCycle = 255;
 		}
 
 		this->pwmController->SetDutyCycle(dutyCycle);
 
 		// Only need to reset integrator if the value overflows.
 		pid_Reset_Integrator(&this->pid);
+
+		commsController->transmit(transient);
 
 		++transient;
 	} while (speed < lowerSpeed || speed > upperSpeed || transient < 3);
