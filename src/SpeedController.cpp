@@ -35,11 +35,8 @@ void SpeedController::setControllerPointers(PWMController* pwmController, ErrorH
 void SpeedController::setFanSpeed(uint8_t speed) {
 	this->requestedSpeed = speed;
 
-	commsController->transmit('h');
-
 	// If zero speed is requested then set the duty cycle to zero.
 	if(speed == 0) {
-		commsController->transmit('s');
 		pwmController->SetDutyCycle(0);
 		return;
 	}
@@ -61,16 +58,16 @@ void SpeedController::setFanSpeed(uint8_t speed) {
 	//commsController->transmit('a');
 	do {
 		// Wait for a speed measurement to be taken.
-		//while(this->speedCount > 0) {
-			//commsController->transmit(this->speedCount);
-			// Do nothing.
-		//}
+		while(this->speedCount > 0) {
+			commsController->transmit(this->speedCount);
+			//Do nothing.
+		}
 
 		// Set a new duty cycle based on the new measured speed.
 		uint16_t dutyCycle = pid_Controller(speed, this->currentSpeed, &this->pid);
 
 		if(dutyCycle > 255) {
-			uint8_t dutyCycle = 255;
+			dutyCycle = 255;
 		}
 
 		this->pwmController->SetDutyCycle(dutyCycle);
@@ -78,10 +75,12 @@ void SpeedController::setFanSpeed(uint8_t speed) {
 		// Only need to reset integrator if the value overflows.
 		pid_Reset_Integrator(&this->pid);
 
-		commsController->transmit(transient);
+		commsController->transmit(this->currentSpeed);
 
-		++transient;
-	} while (speed < lowerSpeed || speed > upperSpeed || transient < 3);
+		if (this->currentSpeed > lowerSpeed || this->currentSpeed < upperSpeed) {
+			++transient;
+		}
+	} while ((this->currentSpeed < lowerSpeed || this->currentSpeed > upperSpeed) && transient < 3);
 }
 
 void SpeedController::measureSpeed() {

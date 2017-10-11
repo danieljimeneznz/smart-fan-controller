@@ -90,21 +90,21 @@ ISR(ADC_vect) {
 	//powerController->readVoltage(11);
 }
 
-//ISR(USART0_RX_vect) {// There are two interrupts available,
-	////one is USART0_RXC_vect (waits for completion) and USART0_RXs_vect (waits for start of incoming)
-	////but atmel in only accepting USART0_RX_vect which i cant find in the data sheet
-	////while (!(UCSR0A & (1<<RXC0)))//loop waits for completion of incoming
-	//
-	//uint8_t data = UDR0;
-//
+ISR(USART0_RX_vect) {// There are two interrupts available,
+	//one is USART0_RXC_vect (waits for completion) and USART0_RXs_vect (waits for start of incoming)
+	//but atmel in only accepting USART0_RX_vect which i cant find in the data sheet
+	//while (!(UCSR0A & (1<<RXC0)))//loop waits for completion of incoming
+	
+	uint8_t data = UDR0;
+
 	//if (data == 'd') {
-		////commsController->jsonComplete = true;
+		//commsController->jsonComplete = true;
 		//commsController->transmit('b');
 		//commsController->transmit(speedController->currentSpeed);
 	//} else {
-		////commsController->json->addCharToJSONString(data);
+		//commsController->json->addCharToJSONString(data);
 	//}
-//}
+}
 
 ISR(TIMER0_OVF_vect){
 	PORTA |= (1<<PORTA1);
@@ -143,7 +143,7 @@ int main(void)
 	// Set relationship between objects
 	commsC.setControllerPointers(&speedC, &powerC, &errorH);
 	powerC.setControllerPointers(&errorH);
-	speedC.setControllerPointers(&pwmC, &errorH, &commsC);
+	//speedC.setControllerPointers(&pwmC, &errorH, &commsC);
 	errorH.setControllerPointers(&commsC);
 
 	// Set ISR pointers
@@ -155,15 +155,15 @@ int main(void)
 
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
-	speedController->setFanSpeed(250);
+	speedController->setFanSpeed(100);
 	//const char* string = "{\"3\":{}}";
 	//for (uint8_t i = 0; i < strlen(string); ++i) {
 		//commsController->json->addCharToJSONString(string[i]);
 	//}
 
-    while (1)                  
+    while(1)                  
     {
-		//commsController->transmit('b');
+		//commsC.transmit('b');
 		//commsController->jsonComplete = true;
 		//commsController->run();
 	}

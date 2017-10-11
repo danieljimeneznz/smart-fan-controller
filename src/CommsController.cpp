@@ -24,11 +24,10 @@ CommsController::CommsController(uint8_t ubrr) {
 }
 
 void CommsController::transmit(uint8_t data) {
-	UCSR0B &= ~(1<<RXEN0); // disable Rx.
-	while (!(UCSR0A&&(1<<UDRE0))); // Wait for empty transmit buffer.
+	UCSR0B &= ~((1<<RXEN0)|(1<<RXCIE0)); // disable Rx and interrupt.
+	while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer.
 	UDR0 = data; // Sending data to TX buffer.
-	while (!(UCSR0A&(1<<TXC0))); // Waits for Tx buffer to be empty.
-	UCSR0B |= (1<<RXEN0); // Enable Rx.
+	UCSR0B |= (1<<RXEN0)|(1<<RXCIE0); // Enable Rx and interrupt.
 }
 
 void CommsController::run(){
