@@ -26,13 +26,12 @@ SpeedController::SpeedController() {
 	this->requestedSpeed = 0;
 }
 
-void SpeedController::setControllerPointers(PWMController* pwmController, ErrorHandler* errorHandler, CommsController* commsController) {
+void SpeedController::setControllerPointers(volatile PWMController* pwmController, volatile ErrorHandler* errorHandler) volatile {
 	this->pwmController = pwmController;
 	this->errorHandler = errorHandler;
-	this->commsController = commsController;
 }
 
-void SpeedController::setFanSpeed(uint8_t speed) {
+void SpeedController::setFanSpeed(uint8_t speed) volatile {
 	this->requestedSpeed = speed;
 
 	// If zero speed is requested then set the duty cycle to zero.
@@ -55,35 +54,34 @@ void SpeedController::setFanSpeed(uint8_t speed) {
 	uint8_t upperSpeed = speed + (speed/10);
 	uint8_t transient = 0; // Used to perform the loop two more times until transients have settled down.
 
+	pwmController->SetDutyCycle(100);
+
 	//commsController->transmit('a');
-	do {
-		// Wait for a speed measurement to be taken.
-		while(this->speedCount > 0) {
-			commsController->transmit(this->speedCount);
-			//Do nothing.
-		}
-
-		// Set a new duty cycle based on the new measured speed.
-		uint16_t dutyCycle = pid_Controller(speed, this->currentSpeed, &this->pid);
-
-		if(dutyCycle > 255) {
-			dutyCycle = 255;
-		}
-
-		this->pwmController->SetDutyCycle(dutyCycle);
-
-		// Only need to reset integrator if the value overflows.
-		pid_Reset_Integrator(&this->pid);
-
-		commsController->transmit(this->currentSpeed);
-
-		if (this->currentSpeed > lowerSpeed || this->currentSpeed < upperSpeed) {
-			++transient;
-		}
-	} while ((this->currentSpeed < lowerSpeed || this->currentSpeed > upperSpeed) && transient < 3);
+	//do {
+		//// Wait for a speed measurement to be taken.
+		//while(this->speedCount > 0) {
+			////Do nothing.
+		//}
+//
+		//// Set a new duty cycle based on the new measured speed.
+		//uint16_t dutyCycle = pid_Controller(speed, this->currentSpeed, &this->pid);
+//
+		//if(dutyCycle > 255) {
+			//dutyCycle = 255;
+		//}
+//
+		//this->pwmController->SetDutyCycle(dutyCycle);
+//
+		//// Only need to reset integrator if the value overflows.
+		//pid_Reset_Integrator(&this->pid);
+//
+		//if (this->currentSpeed > lowerSpeed || this->currentSpeed < upperSpeed) {
+			//++transient;
+		//}
+	//} while ((this->currentSpeed < lowerSpeed || this->currentSpeed > upperSpeed) && transient < 3);
 }
 
-void SpeedController::measureSpeed() {
+void SpeedController::measureSpeed() volatile {
 	// Measure the speed from the hall sensor and change the current speed on the controller.
 
 	// Logic:

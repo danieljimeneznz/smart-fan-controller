@@ -15,7 +15,7 @@ class PWMController {
 public:
 	PWMController();
 
-	void SetDutyCycle(uint8_t Duty);
+	void SetDutyCycle(uint8_t Duty) volatile ;
 
 	uint8_t Duty;
 };

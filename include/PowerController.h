@@ -26,10 +26,8 @@
 class PowerController {
 public:
 	PowerController();
-	void setControllerPointers(ErrorHandler* errorHandler);
 	float getPower();
 private:
-	ErrorHandler* errorHandler;
 	float power;
 	
 	float readVoltage(uint8_t channel);

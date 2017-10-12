@@ -17,6 +17,6 @@ ErrorHandler::ErrorHandler() {
 
 }
 
-void ErrorHandler::setControllerPointers(CommsController* commsController) {
+void ErrorHandler::setControllerPointers(volatile CommsController* commsController) volatile {
 	this->commsController = commsController;
 }

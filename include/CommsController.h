@@ -25,17 +25,16 @@
 class CommsController {
 public:
 	CommsController(uint8_t ubrr);
-	void transmit(uint8_t data);
-	bool jsonComplete;
-	char recieve();
-	void run();
-	void setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler);
+	void transmit(uint8_t data) volatile;
+	volatile bool bjsonComplete;
+	void run() volatile;
+	void setControllerPointers(volatile SpeedController* speedController, volatile PowerController* powerController, volatile ErrorHandler* errorHandler) volatile;
 
 	tinyjsonpp* json;
 private:
-	SpeedController* speedController;
-	PowerController* powerController;
-	ErrorHandler* errorHandler;
+	volatile SpeedController* speedController;
+	volatile PowerController* powerController;
+	volatile ErrorHandler* errorHandler;
 };
 
 #endif /* COMMSCONTROLLER_H_ */

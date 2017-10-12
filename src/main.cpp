@@ -79,31 +79,24 @@ struct {
 // MAIN PROGRAM START
 //**************************************
 
-// Pointers used by ISR.
-CommsController* commsController;
-PowerController* powerController;
-PWMController* pwmController;
-SpeedController* speedController;
-ErrorHandler* errorHandler;
+volatile CommsController commsController(MYBRR);
+volatile PowerController powerController;
+volatile PWMController pwmController;
+volatile SpeedController speedController;
+volatile ErrorHandler errorHandler;
+volatile uint8_t data;
 
 ISR(ADC_vect) {
-	//powerController->readVoltage(11);
 }
 
-ISR(USART0_RX_vect) {// There are two interrupts available,
-	//one is USART0_RXC_vect (waits for completion) and USART0_RXs_vect (waits for start of incoming)
-	//but atmel in only accepting USART0_RX_vect which i cant find in the data sheet
-	//while (!(UCSR0A & (1<<RXC0)))//loop waits for completion of incoming
-	
+ISR(USART0_RX_vect) {	
 	uint8_t data = UDR0;
 
-	//if (data == 'd') {
-		//commsController->jsonComplete = true;
-		//commsController->transmit('b');
-		//commsController->transmit(speedController->currentSpeed);
-	//} else {
-		//commsController->json->addCharToJSONString(data);
-	//}
+	if (data < 30) {
+		commsController.bjsonComplete = true;
+	} else {
+		commsController.json->addCharToJSONString(data);
+	}
 }
 
 ISR(TIMER0_OVF_vect){
@@ -112,7 +105,7 @@ ISR(TIMER0_OVF_vect){
 }
 
 ISR(TIMER1_COMPA_vect){
-	speedController->measureSpeed();
+	speedController.measureSpeed();
 }
 
 // ISR for hall sensor.
@@ -128,43 +121,24 @@ ISR(PCINT0_vect) {
 	}
 
 	// Increment the speedCounter.
-	++speedController->speedCount;
+	++speedController.speedCount;
 }
 
 int main(void)
 {
-	// Instantiate objects in stack.
-	CommsController commsC(MYBRR);
-	PowerController powerC;
-	PWMController pwmC;
-	SpeedController speedC;
-	ErrorHandler errorH;
-
 	// Set relationship between objects
-	commsC.setControllerPointers(&speedC, &powerC, &errorH);
-	powerC.setControllerPointers(&errorH);
-	//speedC.setControllerPointers(&pwmC, &errorH, &commsC);
-	errorH.setControllerPointers(&commsC);
-
-	// Set ISR pointers
-	commsController = &commsC;
-	powerController = &powerC;
-	pwmController = &pwmC;
-	speedController = &speedC;
-	errorHandler = &errorH;
+	commsController.setControllerPointers(&speedController, &powerController, &errorHandler);
+	speedController.setControllerPointers(&pwmController, &errorHandler);
+	errorHandler.setControllerPointers(&commsController);
 
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
-	speedController->setFanSpeed(100);
-	//const char* string = "{\"3\":{}}";
-	//for (uint8_t i = 0; i < strlen(string); ++i) {
-		//commsController->json->addCharToJSONString(string[i]);
-	//}
+	speedController.setFanSpeed(100);
 
     while(1)                  
     {
 		//commsC.transmit('b');
 		//commsController->jsonComplete = true;
-		//commsController->run();
+		commsController.run();
 	}
 }

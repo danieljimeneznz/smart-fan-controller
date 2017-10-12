@@ -29,10 +29,6 @@ PowerController::PowerController() {
 				(1<<ADPS0);
 }
 
-void PowerController::setControllerPointers(ErrorHandler* errorHandler) {
-	this->errorHandler = errorHandler;
-}
-
 float PowerController::readVoltage(uint8_t channel) {
 	return 0.0f;
 }

@@ -48,7 +48,7 @@ PWMController::PWMController() {
 	this->Duty = 0;
 }
 
-void PWMController::SetDutyCycle(uint8_t Duty){
+void PWMController::SetDutyCycle(uint8_t Duty) volatile {
 	OCR0A = Duty;
 	OCR0B = Duty;
 
