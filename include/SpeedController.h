@@ -33,18 +33,21 @@ public:
 	void measureSpeed() volatile;
 
 	// Variables used to count speed.
-	volatile uint16_t speedCount;
+	uint16_t speedCount;
+	volatile uint8_t timerCount;
 
 	// Speed variables.
 	volatile uint8_t currentSpeed;
 	uint8_t requestedSpeed;
+
+	volatile bool bSpeedMeasured;
 
 private:
 	volatile PWMController* pwmController;
 	volatile ErrorHandler* errorHandler;
 
 	// PID controller.
-	PID_DATA pid;
+	volatile PID_DATA pid;
 };
 
 #endif /* SPEEDCONTROLLER_H_ */

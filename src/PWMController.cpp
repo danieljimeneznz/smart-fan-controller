@@ -58,11 +58,8 @@ void PWMController::SetDutyCycle(uint8_t Duty) volatile {
 	if(Duty > 0) {
 		// Disable Pin Change Interrupt
 		GIMSK &= ~(1<<PCIE0);
-		
-		// Set duty cycle to 255 for a couple of cycles to start the motor.
-		//OCR0A = 255;
-		//OCR0B = 255;
-		for (uint8_t i = 0; i < 255; ++i) {
+
+		for (uint8_t i = 0; i < 50; ++i) {
 			if((PINA)&(1<<PINA0)) {
 				TOCPMCOE &= ~ (1<<TOCC7OE);	//disable TOCC1 at PB2
 				TOCPMCOE |= (1<<TOCC2OE);	//enable TOCC0 at PA3
@@ -72,6 +69,7 @@ void PWMController::SetDutyCycle(uint8_t Duty) volatile {
 				TOCPMCOE |= (1<<TOCC7OE);	//enable TOCC1 at PB2
 				PORTA &= ~(1<<PORTA3);		//disable PA3
 			}
+			
 		}
 
 		// Re-Enable Pin Change Interrupt

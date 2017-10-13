@@ -58,8 +58,8 @@ typedef struct PID_DATA {
 #define FALSE 0
 #define TRUE 1
 
-void pid_Init(int16_t p_factor, int16_t i_factor, int16_t d_factor, struct PID_DATA *pid);
-int16_t pid_Controller(int16_t setPoint, int16_t processValue, struct PID_DATA *pid_st);
-void pid_Reset_Integrator(pidData_t *pid_st);
+void pid_Init(int16_t p_factor, int16_t i_factor, int16_t d_factor, volatile struct PID_DATA *pid);
+int16_t pid_Controller(int16_t setPoint, int16_t processValue, volatile struct PID_DATA *pid_st);
+void pid_Reset_Integrator(volatile pidData_t *pid_st);
 
 #endif

@@ -92,7 +92,8 @@ ISR(ADC_vect) {
 ISR(USART0_RX_vect) {	
 	uint8_t data = UDR0;
 
-	if (data < 30) {
+	if (data < 30 && data > 0) {
+		commsController.terminatingChar = data;
 		commsController.bjsonComplete = true;
 	} else {
 		commsController.json->addCharToJSONString(data);
@@ -105,6 +106,7 @@ ISR(TIMER0_OVF_vect){
 }
 
 ISR(TIMER1_COMPA_vect){
+	++speedController.timerCount;
 	speedController.measureSpeed();
 }
 
@@ -122,6 +124,7 @@ ISR(PCINT0_vect) {
 
 	// Increment the speedCounter.
 	++speedController.speedCount;
+	//commsController.transmit('h');
 }
 
 int main(void)
@@ -133,12 +136,9 @@ int main(void)
 
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
-	speedController.setFanSpeed(100);
 
     while(1)                  
     {
-		//commsC.transmit('b');
-		//commsController->jsonComplete = true;
 		commsController.run();
 	}
 }

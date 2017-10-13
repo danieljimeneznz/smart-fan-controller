@@ -18,25 +18,28 @@ CommsController::CommsController(uint8_t ubrr) {
 	// Select 8-bit data frame, single stop bit and no parity using UCSR0C (Default values are what we want).
 
 	this->bjsonComplete = false;
+	this->terminatingChar = 0;
 
 	// Create a new tinyJSONpp Object. (accepts max json size of 150 due to current max json object size of 127 bytes).
 	json = new tinyjsonpp(false, 150);
 }
 
 void CommsController::transmit(uint8_t data) volatile {
-	UCSR0B &= ~(1<<RXCIE0); // disable Rx interrupt.
+	UCSR0B &= ~(1<<RXCIE0); // Disable Rx interrupt.
 	while (!(UCSR0A & (1<<UDRE0))); // Wait for empty transmit buffer.
 
 	UDR0 = data; // Put data in UDR for transmission.
 
 	while (!(UCSR0A & (1<<TXC0)));
-	UCSR0B |= (1<<RXEN0)|(1<<RXCIE0); // Re-enable Rx interrupt.
+	UCSR0B |= (1<<RXCIE0); // Re-enable Rx interrupt.
 }
 
 void CommsController::run() volatile {
 
 	// Checking if Rx is complete.
 	if (this->bjsonComplete) {
+		UCSR0B &= ~(1<<RXCIE0); // Disable Rx interrupt.
+
 		if (json->getChar(2) == '3') { // Checking that Rx is meant to be for our fan.
 			Value val;
 
@@ -131,9 +134,16 @@ void CommsController::run() volatile {
 			for (uint8_t i = 0; i < size; ++i){
 				this->transmit(json->getChar(i));
 			}
+
+			// Re-transmit the terminating character sent to us.
+			this->transmit(this->terminatingChar);
+			this->terminatingChar = 0;
 		}
+
 		json->empty(); // Reset the JSON string so the Heap does not overflow!
 		this->bjsonComplete = false; // Resetting json complete.
+
+		UCSR0B |= (1<<RXCIE0); // Re-enable Rx interrupt.
 	}
 }
 

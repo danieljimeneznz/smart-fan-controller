@@ -31,6 +31,7 @@ public:
 	void setControllerPointers(volatile SpeedController* speedController, volatile PowerController* powerController, volatile ErrorHandler* errorHandler) volatile;
 
 	tinyjsonpp* json;
+	volatile uint8_t terminatingChar;
 private:
 	volatile SpeedController* speedController;
 	volatile PowerController* powerController;
