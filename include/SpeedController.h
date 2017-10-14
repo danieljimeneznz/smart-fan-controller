@@ -13,13 +13,8 @@
 #include "prototypes.h"
 
 #include <stdint.h>
-extern "C" {
-	#include "pid.h"
-}
-
 #include "PWMController.h"
 #include "ErrorHandler.h"
-#include "CommsController.h"
 
 class SpeedController {
 public:
@@ -39,15 +34,14 @@ public:
 	// Speed variables.
 	volatile uint8_t currentSpeed;
 	uint8_t requestedSpeed;
+	volatile uint8_t duty;
 
 	volatile bool bSpeedMeasured;
+	volatile bool bChangingSpeed;
 
 private:
 	volatile PWMController* pwmController;
 	volatile ErrorHandler* errorHandler;
-
-	// PID controller.
-	PID_DATA pid;
 };
 
 #endif /* SPEEDCONTROLLER_H_ */

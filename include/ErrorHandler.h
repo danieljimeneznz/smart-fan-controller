@@ -17,13 +17,22 @@
 class ErrorHandler {
 public:
 	ErrorHandler();
-	void setControllerPointers(volatile CommsController* commsController) volatile;
+	void setControllerPointers(volatile CommsController* commsController, volatile SpeedController* speedController) volatile;
+	void run() volatile;
+	bool checkForErrors() volatile;
+	void clearErrors() volatile;
 
-	bool reqTooLow;
-	bool blockedDuct;
-	bool lockedRotor;
+	volatile bool reqTooLow;
+	volatile bool blockedDuct;
+	volatile bool lockedRotor;
+
+	volatile uint16_t errorEEPROMStart;
+	volatile uint8_t errorEEPROMLength;
+	volatile uint8_t timerCount;
+	volatile uint8_t lockedRotorCount;
 private:
 	volatile CommsController* commsController;
+	volatile SpeedController* speedController;
 };
 
 #endif /* ERRORHANDLER_H_ */

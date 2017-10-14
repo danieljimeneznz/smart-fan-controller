@@ -24,7 +24,7 @@
 //**************************************
 // EEPROM STRING LITERAL STORAGE
 //**************************************
-#define SOFTWARE_VERSION "0.1.0"
+#define SOFTWARE_VERSION "0.2.0"
 
 // The struct is defined so that the strings are stored in EEPROM in a particular order.
 struct {
@@ -105,9 +105,14 @@ ISR(TIMER0_OVF_vect){
 	PORTA |= (1<<PORTA2);
 }
 
-ISR(TIMER1_COMPA_vect){
+ISR(TIMER1_COMPA_vect) {
 	++speedController.timerCount;
 	speedController.measureSpeed();
+}
+
+ISR(TIMER2_COMPA_vect) {
+	++errorHandler.timerCount;
+	errorHandler.run();
 }
 
 // ISR for hall sensor.
@@ -124,7 +129,6 @@ ISR(PCINT0_vect) {
 
 	// Increment the speedCounter.
 	++speedController.speedCount;
-	//commsController.transmit('h');
 }
 
 int main(void)
@@ -132,7 +136,7 @@ int main(void)
 	// Set relationship between objects
 	commsController.setControllerPointers(&speedController, &powerController, &errorHandler);
 	speedController.setControllerPointers(&pwmController, &errorHandler);
-	errorHandler.setControllerPointers(&commsController);
+	errorHandler.setControllerPointers(&commsController, &speedController);
 
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
