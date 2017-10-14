@@ -61,9 +61,10 @@ void SpeedController::setFanSpeed(uint8_t speed) volatile {
 	uint8_t lowerSpeed = speed - (speed/20);
 	uint8_t upperSpeed;
 
-	// Bound the upper speed limit.
+	// Bound the upper speed limit (and lower speed limit for high speeds as max speed ~228rpm when blocked).
 	if (speed > 240) {
 		upperSpeed = 255;
+		lowerSpeed = speed - 30;
 	} else if(speed < 35) {
 		upperSpeed = speed + (speed/5);
 	} else {

@@ -32,7 +32,7 @@ public:
 	volatile uint8_t timerCount;
 
 	// Speed variables.
-	volatile uint8_t currentSpeed;
+	volatile uint16_t currentSpeed;
 	uint8_t requestedSpeed;
 	volatile uint8_t duty;
 
