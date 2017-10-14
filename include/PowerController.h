@@ -1,3 +1,5 @@
+
+
 /*
  * PowerController.h
  *
@@ -26,12 +28,16 @@
 class PowerController {
 public:
 	PowerController();
-	float getPower();
-private:
-	float power;
+	void setControllerPointers(ErrorHandler* errorHandler);
+	uint16_t getPower();
+	uint16_t voltage, current;
 	
-	float readVoltage(uint8_t channel);
-	//float
+private:
+	ErrorHandler* errorHandler;
+	uint16_t power;
+	
+	uint16_t readVoltage(uint8_t channel);
+
 };
 
 #endif /* POWERCONTROLLER_H_ */
