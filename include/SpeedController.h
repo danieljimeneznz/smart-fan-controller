@@ -47,7 +47,7 @@ private:
 	volatile ErrorHandler* errorHandler;
 
 	// PID controller.
-	volatile PID_DATA pid;
+	PID_DATA pid;
 };
 
 #endif /* SPEEDCONTROLLER_H_ */

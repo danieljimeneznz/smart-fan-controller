@@ -8,9 +8,10 @@
 
 #include "SpeedController.h"
 
+#define KP 0.5f
+#define KI 0.07f
+
 SpeedController::SpeedController() {
-	// Initialize the PID controller.
-	pid_Init(60, 0, 0, &this->pid);
 	this->bSpeedMeasured = false;
 
 	// Setup timer used to measure speed of the fan.
@@ -51,44 +52,58 @@ void SpeedController::setFanSpeed(uint8_t speed) volatile {
 		speed = 30;
 	}
 
-	// Change the Duty cycle until the speed is within acceptable limits. (+-10%)
-	uint8_t lowerSpeed = speed - (speed/10);
+	// Change the Duty cycle until the speed is within acceptable limits. (+-5%)
+	uint8_t lowerSpeed = speed - (speed/20);
 	uint8_t upperSpeed;
 
 	// Bound the upper speed limit.
-	if (speed > 230) {
+	if (speed > 240) {
 		upperSpeed = 255;
 	} else {
-		upperSpeed = speed + (speed/10);
+		upperSpeed = speed + (speed/20);
 	
 	}
 	//this->pwmController->SetDutyCycle(speed);
 
-	while (this->currentSpeed < lowerSpeed || this->currentSpeed > upperSpeed) {
+	uint8_t transient = 0;
+	float dutyCycle = (float)pwmController->Duty;
+	uint8_t duty = pwmController->Duty;
+	int16_t error = 0;
+	int16_t integral = 0;
+
+	while ((this->currentSpeed < lowerSpeed || this->currentSpeed > upperSpeed)&& transient < 255) {
 		//Wait for a speed measurement to be taken.
-		while(!bSpeedMeasured) {
+		while(!this->bSpeedMeasured) {
 			// Do Nothing.
 		}
 
-		// Set a new duty cycle based on the new measured speed.
-		uint16_t dutyCycle = pid_Controller(speed, this->currentSpeed, &this->pid);
+		// PID Controller based on: http://tutorial.cytron.io/2012/06/22/pid-for-embedded-design/
+		error = (int16_t)speed - (int16_t)this->currentSpeed;
+		integral = integral + error;
 
-		if(dutyCycle > 255) {
+		dutyCycle = (KP * error) + (KI * integral);
+
+		if (dutyCycle > 255) {
 			dutyCycle = 255;
+		} else if (dutyCycle <= 0) {
+			dutyCycle = 0;
 		}
 
-		this->pwmController->SetDutyCycle(dutyCycle);
+		duty = (uint8_t)dutyCycle;
 
-		// Only need to reset integrator if the value overflows.
-		pid_Reset_Integrator(&this->pid);
+		this->pwmController->SetDutyCycle(duty);
 
-		bSpeedMeasured = false;
-	};
+		if (this->currentSpeed > lowerSpeed && this->currentSpeed < upperSpeed) {
+			++transient;
+		}
+
+		this->bSpeedMeasured = false;
+	}
 }
 
 void SpeedController::measureSpeed() volatile {
-	// Check if we have counted to 3 seconds.
-	if(this->timerCount < 6) {
+	// Check if we have counted to 1 seconds.
+	if(this->timerCount < 2) {
 		return;
 	}
 
@@ -102,7 +117,7 @@ void SpeedController::measureSpeed() volatile {
 
 	// Convert frequency to RPM/10 to get speed.
 	// f(rpm) = f(Hz) * 60;
-	this->currentSpeed = speedCount/4 * 2;
+	this->currentSpeed = speedCount/4 * 6;
 
 	this->bSpeedMeasured = true;
 

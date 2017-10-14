@@ -137,6 +137,9 @@ int main(void)
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
 
+	//speedController.bSpeedMeasured = true;
+	//speedController.setFanSpeed(100);
+
     while(1)                  
     {
 		commsController.run();
