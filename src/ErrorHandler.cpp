@@ -10,8 +10,13 @@
 
 ErrorHandler::ErrorHandler() {
 
+	// Set class variables.
+	this->reqTooLow = false;
+	this->blockedDuct = false;
+	this->lockedRotor = false;
+
 }
 
-void ErrorHandler::setControllerPointers(CommsController* commsController) {
+void ErrorHandler::setControllerPointers(volatile CommsController* commsController) volatile {
 	this->commsController = commsController;
 }

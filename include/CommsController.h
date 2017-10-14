@@ -12,7 +12,7 @@
 #include "prototypes.h"
 
 #define BAUD 9600 // Baud Rate
-#define MYBRR 52 //(((F_CPU/(BAUD*16UL))) - 1)
+#define MYBRR 51 //(((F_CPU/(BAUD*16UL))) - 1)
 
 #include <avr/io.h>
 #include <stdint.h>
@@ -25,15 +25,17 @@
 class CommsController {
 public:
 	CommsController(uint8_t ubrr);
-	void transmit(unsigned char data);
-	bool jsonComplete;
-	char recieve();
-	void setControllerPointers(SpeedController* speedController, PowerController* powerController, ErrorHandler* errorHandler);
-private:
-	SpeedController* speedController;
-	PowerController* powerController;
-	ErrorHandler* errorHandler;
+	void transmit(uint8_t data) volatile;
+	volatile bool bjsonComplete;
+	void run() volatile;
+	void setControllerPointers(volatile SpeedController* speedController, volatile PowerController* powerController, volatile ErrorHandler* errorHandler) volatile;
+
 	tinyjsonpp* json;
+	volatile uint8_t terminatingChar;
+private:
+	volatile SpeedController* speedController;
+	volatile PowerController* powerController;
+	volatile ErrorHandler* errorHandler;
 };
 
 #endif /* COMMSCONTROLLER_H_ */

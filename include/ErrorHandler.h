@@ -17,9 +17,13 @@
 class ErrorHandler {
 public:
 	ErrorHandler();
-	void setControllerPointers(CommsController* commsController);
+	void setControllerPointers(volatile CommsController* commsController) volatile;
+
+	bool reqTooLow;
+	bool blockedDuct;
+	bool lockedRotor;
 private:
-	CommsController* commsController;
+	volatile CommsController* commsController;
 };
 
 #endif /* ERRORHANDLER_H_ */

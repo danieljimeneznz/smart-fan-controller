@@ -19,30 +19,32 @@ extern "C" {
 
 #include "PWMController.h"
 #include "ErrorHandler.h"
+#include "CommsController.h"
 
 class SpeedController {
 public:
 	SpeedController();
-	void setControllerPointers(PWMController* pwmController, ErrorHandler* errorHandler);
+	void setControllerPointers(volatile PWMController* pwmController, volatile ErrorHandler* errorHandler) volatile;
 
 	// Sets the fans speed provided a speed.
-	void setFanSpeed(uint8_t speed);
+	void setFanSpeed(uint8_t speed) volatile;
 
 	// Measure the speed of the fan using the Hall sensor. Stores the speed in the currentSpeed.
-	void measureSpeed();
+	void measureSpeed() volatile;
 
-	// Returns the requested speed.
-	uint8_t getRequestedSpeed();
-
-	// Returns the current speed.
-	uint8_t getCurrentSpeed();
-private:
-	PWMController* pwmController;
-	ErrorHandler* errorHandler;
+	// Variables used to count speed.
+	uint16_t speedCount;
+	volatile uint8_t timerCount;
 
 	// Speed variables.
-	uint8_t currentSpeed;
+	volatile uint8_t currentSpeed;
 	uint8_t requestedSpeed;
+
+	volatile bool bSpeedMeasured;
+
+private:
+	volatile PWMController* pwmController;
+	volatile ErrorHandler* errorHandler;
 
 	// PID controller.
 	PID_DATA pid;
