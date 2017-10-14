@@ -8,8 +8,8 @@
 
 #include "SpeedController.h"
 
-#define KP 0.5f
-#define KI 0.07f
+#define KP 0.65f
+#define KI 0.15f
 
 SpeedController::SpeedController() {
 	this->bSpeedMeasured = false;
@@ -59,19 +59,20 @@ void SpeedController::setFanSpeed(uint8_t speed) volatile {
 	// Bound the upper speed limit.
 	if (speed > 240) {
 		upperSpeed = 255;
+	} else if(speed < 35) {
+		upperSpeed = speed + (speed/5);
 	} else {
 		upperSpeed = speed + (speed/20);
-	
 	}
 	//this->pwmController->SetDutyCycle(speed);
 
-	uint8_t transient = 0;
+	uint16_t transient = 0;
 	float dutyCycle = (float)pwmController->Duty;
 	uint8_t duty = pwmController->Duty;
 	int16_t error = 0;
 	int16_t integral = 0;
 
-	while ((this->currentSpeed < lowerSpeed || this->currentSpeed > upperSpeed)&& transient < 255) {
+	while ((this->currentSpeed < lowerSpeed || this->currentSpeed > upperSpeed)&& transient < 1024) {
 		//Wait for a speed measurement to be taken.
 		while(!this->bSpeedMeasured) {
 			// Do Nothing.
@@ -86,7 +87,8 @@ void SpeedController::setFanSpeed(uint8_t speed) volatile {
 		if (dutyCycle > 255) {
 			dutyCycle = 255;
 		} else if (dutyCycle <= 0) {
-			dutyCycle = 0;
+			// A speed request above zero was asked for so clip at a low acceptable duty cycle.
+			dutyCycle = 10;
 		}
 
 		duty = (uint8_t)dutyCycle;
