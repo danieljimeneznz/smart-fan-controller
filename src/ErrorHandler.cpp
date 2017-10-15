@@ -10,17 +10,10 @@
 #include <math.h>
 
 ErrorHandler::ErrorHandler() {
-
 	// Set class variables.
 	this->reqTooLow = false;
 	this->blockedDuct = false;
 	this->lockedRotor = false;
-
-	// Setup timer used to rebroadcast error messages.
-	TCCR2B |= (0<<CS22)|(1<<CS21)|(1<<CS20); // Set clock Prescaler to 64.
-	TIMSK2 |= (1<<OCIE2A); // Enables Compare Interrupt for Timer.
-	TCNT2 = 0; // Timer Default Value of 0.
-	OCR2A = 62500; // Timer Compare value = 62500 so overflow happens at ~500ms.
 
 	this->timerCount = 0;
 }

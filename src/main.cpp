@@ -24,7 +24,7 @@
 //**************************************
 // EEPROM STRING LITERAL STORAGE
 //**************************************
-#define SOFTWARE_VERSION "0.3.0"
+#define SOFTWARE_VERSION "0.3.1"
 
 // The struct is defined so that the strings are stored in EEPROM in a particular order.
 struct {
@@ -110,11 +110,6 @@ ISR(TIMER1_COMPA_vect) {
 	speedController.measureSpeed();
 	++errorHandler.timerCount;
 	errorHandler.run();
-}
-
-ISR(TIMER2_COMPA_vect) {
-	//++errorHandler.timerCount;
-	//errorHandler.run();
 }
 
 // ISR for hall sensor.
