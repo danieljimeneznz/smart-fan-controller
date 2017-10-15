@@ -108,11 +108,13 @@ ISR(TIMER0_OVF_vect){
 ISR(TIMER1_COMPA_vect) {
 	++speedController.timerCount;
 	speedController.measureSpeed();
+	++errorHandler.timerCount;
+	errorHandler.run();
 }
 
 ISR(TIMER2_COMPA_vect) {
-	++errorHandler.timerCount;
-	errorHandler.run();
+	//++errorHandler.timerCount;
+	//errorHandler.run();
 }
 
 // ISR for hall sensor.
@@ -141,11 +143,9 @@ int main(void)
 	// Enable Interrupts
 	sei(); // Set global interrupt enable.
 
-	//speedController.bSpeedMeasured = true;
-	//speedController.setFanSpeed(100);
-
     while(1)                  
     {
 		commsController.run();
+		speedController.run();
 	}
 }

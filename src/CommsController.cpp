@@ -52,8 +52,11 @@ void CommsController::run() volatile {
 			// Set current key to req.
 			read_eeprom_array(19, key, 4);
 			val = json->getValue(key);
-			if (val.size > 0 && !speedController->bChangingSpeed) {
+			if (val.size > 0) {
 				speedController->setFanSpeed(json->convertValueToInt(val));
+
+				// Ignore lockedRotor for initially changing speed.
+				errorHandler->lockedRotor = false;
 			}
 
 			// Set current key to clr.

@@ -29,7 +29,6 @@ public:
 	volatile uint16_t errorEEPROMStart;
 	volatile uint8_t errorEEPROMLength;
 	volatile uint8_t timerCount;
-	volatile uint8_t lockedRotorCount;
 private:
 	volatile CommsController* commsController;
 	volatile SpeedController* speedController;

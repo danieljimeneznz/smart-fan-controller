@@ -41,13 +41,15 @@ void ErrorHandler::run() volatile {
 
 	// Locked rotor detection. i.e. we have asked for a Duty Cycle but have zero speed.
 	if(speedController->duty > 0 && speedController->currentSpeed == 0) {
-		++this->lockedRotorCount;
-		if(this->lockedRotorCount > 5) {
-			this->lockedRotor = true;
-			lockedRotorCount = 0;
-		}
+		this->lockedRotor = true;
 	} else {
 		this->lockedRotor = false;
+	}
+
+	// Special case not to rebroadcast errors for zero speed request.
+	if(speedController->requestedSpeed == 0) {
+		this->lockedRotor = false;
+		this->reqTooLow = false;
 	}
 
 	if (this->reqTooLow || this->blockedDuct || this->lockedRotor) {

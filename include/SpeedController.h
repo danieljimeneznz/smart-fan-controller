@@ -21,8 +21,10 @@ public:
 	SpeedController();
 	void setControllerPointers(volatile PWMController* pwmController, volatile ErrorHandler* errorHandler) volatile;
 
+	void run() volatile;
+
 	// Sets the fans speed provided a speed.
-	void setFanSpeed(uint8_t speed) volatile;
+	void setFanSpeed(uint8_t Speed) volatile;
 
 	// Measure the speed of the fan using the Hall sensor. Stores the speed in the currentSpeed.
 	void measureSpeed() volatile;
@@ -34,11 +36,11 @@ public:
 	// Speed variables.
 	volatile uint16_t currentSpeed;
 	uint8_t requestedSpeed;
+	volatile uint8_t lowerSpeed;
+	volatile uint8_t upperSpeed;
 	volatile uint8_t duty;
 
 	volatile bool bSpeedMeasured;
-	volatile bool bChangingSpeed;
-
 private:
 	volatile PWMController* pwmController;
 	volatile ErrorHandler* errorHandler;
