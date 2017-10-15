@@ -26,12 +26,13 @@ class CommsController {
 public:
 	CommsController(uint8_t ubrr);
 	void transmit(uint8_t data) volatile;
-	volatile bool bjsonComplete;
 	void run() volatile;
 	void setControllerPointers(volatile SpeedController* speedController, volatile PowerController* powerController, volatile ErrorHandler* errorHandler) volatile;
 
 	tinyjsonpp* json;
 	volatile uint8_t terminatingChar;
+	volatile bool bjsonComplete;
+	volatile bool bReTransmit;
 private:
 	volatile SpeedController* speedController;
 	volatile PowerController* powerController;

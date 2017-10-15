@@ -18,6 +18,7 @@ CommsController::CommsController(uint8_t ubrr) {
 	// Select 8-bit data frame, single stop bit and no parity using UCSR0C (Default values are what we want).
 
 	this->bjsonComplete = false;
+	this->bReTransmit = false;
 	this->terminatingChar = 0;
 
 	// Create a new tinyJSONpp Object. (accepts max json size of 150 due to current max json object size of 127 bytes).
@@ -37,10 +38,10 @@ void CommsController::transmit(uint8_t data) volatile {
 void CommsController::run() volatile {
 
 	// Checking if Rx is complete.
-	if (this->bjsonComplete) {
+	if (this->bjsonComplete || this->bReTransmit) {
 		UCSR0B &= ~(1<<RXCIE0); // Disable Rx interrupt.
 
-		if (json->getChar(2) == '3') { // Checking that Rx is meant to be for our fan.
+		if (json->getChar(2) == '3' || this->bReTransmit) { // Checking that Rx is meant to be for our fan.
 			Value val;
 
 			// Allocate heap space for reading EEPROM information into.
@@ -53,13 +54,17 @@ void CommsController::run() volatile {
 			val = json->getValue(key);
 			if (val.size > 0) {
 				speedController->setFanSpeed(json->convertValueToInt(val));
+
+				// Ignore lockedRotor for initially changing speed.
+				errorHandler->lockedRotor = false;
 			}
 
 			// Set current key to clr.
 			read_eeprom_array(31, key, 4);
 			val = json->getValue(key);
 			if (val.size > 0){
-			// Clear errors.
+				// Clear errors.
+				errorHandler->clearErrors();
 			}
 
 			// Reconstruct our json message.
@@ -85,21 +90,25 @@ void CommsController::run() volatile {
 			// Set key to pwr.
 			read_eeprom_array(27, key, 4);
 			// TODO: SET VALUE TO VALUE OF POWER.
-			itoa(speedController->requestedSpeed, value, 10); // Converting requested speed value from int to string.
+			itoa(speedController->duty, value, 10); // Converting requested speed value from int to string.
 			// Set parent to root.
 			read_eeprom_array(0, parent, 2);
 			// Inserting power values.
 			json->insert(key, value, parent);
 
 			// ------------------ ERRORS -------------------
-			// Set key to ew.
-			read_eeprom_array(35, key, 3);
-			// TODO: SET VALUE TO THE CORRECT ERROR.
-			itoa(speedController->requestedSpeed, value, 10); // Converting requested speed value from int to string.
-			// Set parent to root.
-			read_eeprom_array(0, parent, 2);
-			// Inserting errors.
-			json->insert(key, value, parent);
+			bool errors = errorHandler->checkForErrors();
+			if (errors) {
+				// Set key to ew.
+				read_eeprom_array(35, key, 3);
+				// TODO: SET VALUE TO THE CORRECT ERROR.
+				// Set value to error based on stored error EEPROM locations.
+				read_eeprom_array(errorHandler->errorEEPROMStart, value, errorHandler->errorEEPROMLength);
+				// Set parent to root.
+				read_eeprom_array(0, parent, 2);
+				// Inserting errors.
+				json->insert(key, value, parent);
+			}
 
 			// ------------------ SPEED --------------------
 			// Set key to spd.
@@ -142,6 +151,7 @@ void CommsController::run() volatile {
 
 		json->empty(); // Reset the JSON string so the Heap does not overflow!
 		this->bjsonComplete = false; // Resetting json complete.
+		this->bReTransmit = false;
 
 		UCSR0B |= (1<<RXCIE0); // Re-enable Rx interrupt.
 	}
