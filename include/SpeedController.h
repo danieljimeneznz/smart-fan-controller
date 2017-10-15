@@ -38,6 +38,8 @@ public:
 	uint8_t requestedSpeed;
 	volatile uint8_t lowerSpeed;
 	volatile uint8_t upperSpeed;
+	volatile uint8_t dLowerSpeed;
+	volatile uint8_t dUpperSpeed;
 	volatile uint8_t duty;
 
 	volatile bool bSpeedMeasured;
