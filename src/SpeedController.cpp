@@ -13,7 +13,6 @@
 
 SpeedController::SpeedController() {
 	this->bSpeedMeasured = false;
-	this->bChangingSpeed = false;
 
 	// Setup timer used to measure speed of the fan.
 	TCCR1B |= (0<<CS12)|(1<<CS11)|(1<<CS10); // Set clock Prescaler to 64.
@@ -28,6 +27,8 @@ SpeedController::SpeedController() {
 	// Initialize speed variables.
 	this->currentSpeed = 0;
 	this->requestedSpeed = 0;
+	this->lowerSpeed = 3;
+	this->upperSpeed = 0;
 }
 
 void SpeedController::setControllerPointers(volatile PWMController* pwmController, volatile ErrorHandler* errorHandler) volatile {
@@ -35,9 +36,14 @@ void SpeedController::setControllerPointers(volatile PWMController* pwmControlle
 	this->errorHandler = errorHandler;
 }
 
+void SpeedController::run() volatile {
+	if(this->currentSpeed < (uint8_t)(lowerSpeed - dLowerSpeed - (dLowerSpeed/5)) || this->currentSpeed > (uint8_t)(upperSpeed + dUpperSpeed)) {
+		setFanSpeed(requestedSpeed);
+	}
+}
+
 void SpeedController::setFanSpeed(uint8_t speed) volatile {
 	this->requestedSpeed = speed;
-	this->bChangingSpeed = true;
 
 	// If zero speed is requested then set the duty cycle to zero.
 	if(speed == 0) {
@@ -58,28 +64,27 @@ void SpeedController::setFanSpeed(uint8_t speed) volatile {
 	}
 
 	// Change the Duty cycle until the speed is within acceptable limits. (+-5%)
-	uint8_t lowerSpeed = speed - (speed/20);
-	uint8_t upperSpeed;
+	dLowerSpeed = (speed/20);
+	dUpperSpeed = (speed/20);
 
 	// Bound the upper speed limit (and lower speed limit for high speeds as max speed ~228rpm when blocked).
 	if (speed > 240) {
-		upperSpeed = 255;
-		lowerSpeed = speed - 30;
+		dLowerSpeed = 32;
+		dUpperSpeed = 0;
 	} else if(speed < 35) {
-		upperSpeed = speed + (speed/5);
-	} else {
-		upperSpeed = speed + (speed/20);
+		dUpperSpeed = (speed/5);
 	}
-	//this->pwmController->SetDutyCycle(speed);
 
-	uint8_t transient = 0;
+	lowerSpeed = speed - dLowerSpeed;
+	upperSpeed = speed + dUpperSpeed;
+
 	uint8_t lockedRotor = 0;
 	float dutyCycle = (float)pwmController->Duty;
 	this->duty = pwmController->Duty;
 	int16_t error = 0;
 	int16_t integral = 0;
 
-	while ((this->currentSpeed < lowerSpeed || this->currentSpeed > upperSpeed)&& transient < 255) {
+	while ((this->currentSpeed < lowerSpeed || this->currentSpeed > upperSpeed)) {
 		//Wait for a speed measurement to be taken.
 		while(!this->bSpeedMeasured) {
 			// Do Nothing.
@@ -103,22 +108,15 @@ void SpeedController::setFanSpeed(uint8_t speed) volatile {
 		// Locked rotor detection. i.e. we have asked for a Duty Cycle but have zero speed.
 		if(duty > 0 && this->currentSpeed == 0) {
 			++lockedRotor;
-			if(lockedRotor == 5) {
-				errorHandler->lockedRotor = true;
+			if (lockedRotor > 1) {
 				return;
 			}
 		}
 
 		this->pwmController->SetDutyCycle(duty);
 
-		if (this->currentSpeed > lowerSpeed && this->currentSpeed < upperSpeed) {
-			++transient;
-		}
-
 		this->bSpeedMeasured = false;
 	}
-
-	this->bChangingSpeed = false;
 }
 
 void SpeedController::measureSpeed() volatile {
