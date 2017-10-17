@@ -37,12 +37,7 @@ PowerController::PowerController() {
 // Do not need to set ref voltage as default is Vcc.
 // pb0 = voltage input, pb1 = current measurement.
 
-
-void PowerController::setControllerPointers(ErrorHandler* errorHandler) {
-	this->errorHandler = errorHandler;
-}
-
-void PowerController::readValue(uint8_t channel) {
+void PowerController::readValue(uint8_t channel) volatile {
 	if (channel == (10)){
 		ADMUXA |=	(0<<MUX5)| // Set the current ADC MUX to ADC11 (Vm).
 					(0<<MUX4)|
@@ -64,27 +59,20 @@ void PowerController::readValue(uint8_t channel) {
 		
 	if (channel == (10)){ // Reading voltage.
 		voltage = ADC;
-		voltage = voltage*(5/1023); // Converting decimal to corresponding value.
+		voltage = voltage * 0.004887f; // Converting decimal to corresponding value.
 	}
 
 	if (channel == (11)){ // Reading current.
 		current = ADC;
-		current = current*(5/1023); // Converting decimal to corresponding value.
+		current = current * 0.004887f; // Converting decimal to corresponding value.
 	}
 			
-	ADCSRA |=	(1<<ADSC); // I think this is where we set it back to 1
-	
-	return;
+	ADCSRA |= (1<<ADSC);
 }
 
 
-float PowerController::getPower(){
+float PowerController::getPower() volatile {
 		PowerController::readValue(ADC_V_CHANNEL);
 		PowerController::readValue(ADC_I_CHANNEL);
-		
-		if ((voltage > 0) && (current > 0)){ // (i only intend to check if voltage and current have been updated, unsure how to do it).
-			power = voltage*current;
-			return power;
-		}
-		return 0;
+		return voltage * current;
 }

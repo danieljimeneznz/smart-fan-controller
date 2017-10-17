@@ -89,8 +89,19 @@ void CommsController::run() volatile {
 			// ------------------ POWER --------------------
 			// Set key to pwr.
 			read_eeprom_array(27, key, 4);
-			// TODO: SET VALUE TO VALUE OF POWER.
-			itoa(speedController->duty, value, 10); // Converting requested speed value from int to string.
+			// Converting requested power value from float to string.
+			uint8_t power = (uint8_t)powerController->getPower() * 10; // Times Power float by 10 to get the x.xyy to xx.yy, cast to int to remove decimal.
+			if (power > 9) {
+				itoa(speedController->requestedSpeed, value, 10); // Converting requested speed value from int to string.
+				value[2] = value[1];
+				value[1] = '.';
+			} else {
+				itoa(speedController->requestedSpeed, &value[2], 10); // Converting requested speed value from int to string.
+				value[0] = '0';
+				value[1] = '.';
+			}
+			value[3] = '\0';
+			
 			// Set parent to root.
 			read_eeprom_array(0, parent, 2);
 			// Inserting power values.
