@@ -41,7 +41,7 @@ void CommsController::run() volatile {
 	if (this->bjsonComplete || this->bReTransmit) {
 		UCSR0B &= ~(1<<RXCIE0); // Disable Rx interrupt.
 
-		if (json->getChar(2) == '3' || this->bReTransmit) { // Checking that Rx is meant to be for our fan.
+		if ((json->getChar(2) == '3' && (json->getChar(3) == '"')) || this->bReTransmit) { // Checking that Rx is meant to be for our fan.
 			Value val;
 
 			// Allocate heap space for reading EEPROM information into.
@@ -90,17 +90,21 @@ void CommsController::run() volatile {
 			// Set key to pwr.
 			read_eeprom_array(27, key, 4);
 			// Converting requested power value from float to string.
-			uint8_t power = (uint8_t)powerController->getPower() * 10; // Times Power float by 10 to get the x.xyy to xx.yy, cast to int to remove decimal.
+			volatile uint8_t power = (uint8_t)(powerController->getPower() * 10); // Times Power float by 10 to get the x.xyy to xx.yy, cast to int to remove decimal.
+			itoa(power, value, 10); // Converting requested power value from int to string.
 			if (power > 9) {
-				itoa(speedController->requestedSpeed, value, 10); // Converting requested speed value from int to string.
 				value[2] = value[1];
 				value[1] = '.';
 			} else {
-				itoa(speedController->requestedSpeed, &value[2], 10); // Converting requested speed value from int to string.
+				value[2] = value[0];
+				if (power == 0) {
+					value[2] = '0';
+				}
 				value[0] = '0';
 				value[1] = '.';
 			}
-			value[3] = '\0';
+			value[3] = 'W';
+			value[4] = '\0';
 			
 			// Set parent to root.
 			read_eeprom_array(0, parent, 2);
