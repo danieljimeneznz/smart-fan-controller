@@ -16,7 +16,7 @@
 
 #include "prototypes.h"
 
-#include "ErrorHandler.h"
+#include <stdint.h>
 
 class PowerController {
 public:

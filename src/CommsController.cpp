@@ -90,7 +90,7 @@ void CommsController::run() volatile {
 			// Set key to pwr.
 			read_eeprom_array(27, key, 4);
 			// Converting requested power value from float to string.
-			volatile uint8_t power = (uint8_t)(powerController->getPower() * 10); // Times Power float by 10 to get the x.xyy to xx.yy, cast to int to remove decimal.
+			volatile uint8_t power = (uint8_t)((0.008788f * speedController->currentSpeed + 0.07952f) * 10.0f); // Times Power float by 10 to get the x.xyy to xx.yy, cast to int to remove decimal.
 			itoa(power, value, 10); // Converting requested power value from int to string.
 			if (power > 9) {
 				value[2] = value[1];
