@@ -24,7 +24,7 @@
 //**************************************
 // EEPROM STRING LITERAL STORAGE
 //**************************************
-#define SOFTWARE_VERSION "0.3.1"
+#define SOFTWARE_VERSION "0.4.1"
 
 // The struct is defined so that the strings are stored in EEPROM in a particular order.
 struct {
