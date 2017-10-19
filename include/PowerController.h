@@ -1,5 +1,4 @@
 
-
 /*
  * PowerController.h
  *
@@ -12,31 +11,22 @@
 #ifndef POWERCONTROLLER_H_
 #define POWERCONTROLLER_H_
 
-#define VREF 5.0 // Reference Voltage
-#define SHUNT 1.0 // Shunt resistor value.
-#define ADC_RESOLUTION 10 // ADC Resolution.
-#define STEP VREF/pow(2, ADC_RESOLUTION) // Step Size.
-#define SOURCE_FREQUENCY 500
-
 #define ADC_I_CHANNEL 10 // Current Measurement Channel.
 #define ADC_V_CHANNEL 11 // Voltage Measurement Channel.
 
 #include "prototypes.h"
 
-#include "ErrorHandler.h"
+#include <stdint.h>
 
 class PowerController {
 public:
 	PowerController();
-	void setControllerPointers(ErrorHandler* errorHandler);
-	uint16_t getPower();
-	uint16_t voltage, current;
+	float getPower() volatile;
+	volatile float voltage; 
+	volatile float current;
 	
 private:
-	ErrorHandler* errorHandler;
-	uint16_t power;
-	
-	uint16_t readVoltage(uint8_t channel);
+	void readValue(uint8_t channel) volatile;
 
 };
 
