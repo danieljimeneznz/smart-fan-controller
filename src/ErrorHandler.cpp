@@ -44,10 +44,10 @@ void ErrorHandler::run() volatile {
 	// Relationship between speed and duty cycle was found by plotting various speeds against the pwm value
 	// and then fitting a curve using MATLAB to those points to get a fairly accurate read if the duct is blocked.
 	// this curve was y=a*x^b (where y=speed, x=pwm, a=18, b=0.482).
-	float speed = 16.90f * powf((float)speedController->duty, 0.482f);
+	float speed = 19.0f * powf((float)speedController->duty, 0.482f);
 
 	// If the calculated speed is greater than the requested speed.
-	if(speedController->requestedSpeed < (uint8_t)speed && speedController->requestedSpeed > 79) {
+	if((uint16_t)speedController->requestedSpeed < (uint16_t)speed && speedController->requestedSpeed > 79) {
 		// The duct is blocked. Unless at speeds below ~80.
 		this->blockedDuct = true;
 	} else {
